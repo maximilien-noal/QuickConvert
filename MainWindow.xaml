@@ -1,0 +1,78 @@
+﻿<Window x:Class="QuickConvert.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
+        mc:Ignorable="d"
+        Title="Convertisseur rapide de fichiers multimédia"
+        SizeToContent="WidthAndHeight"
+        MinWidth="700"
+        MinHeight="300"
+        Icon="Assets/appicon.png"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen">
+    <Window.Style>
+        <Style BasedOn="{StaticResource {x:Type Window}}" TargetType="Window" />
+    </Window.Style>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch">
+                <Label>Fichier(s) à convertir</Label>
+                <ListView ItemsSource="{Binding SourceFiles}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Stretch">
+                <Label>Noms des fichiers</Label>
+                <ListView ItemsSource="{Binding DestFiles}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBox Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+            <StackPanel Grid.Column="3" Orientation="Vertical" VerticalAlignment="Stretch">
+                <Label>Format de sortie</Label>
+                <ComboBox ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
+                <Label>Bitrate (détermine la taille et la qualité)</Label>
+                <ComboBox ItemsSource="{Binding Bitrates}" SelectedItem="{Binding Bitrate}" />
+                <Label>Dossier de destination</Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding DestFolder}" />
+                    <Button Grid.Column="1" Content="..." Command="{Binding PickDestFolder}" Margin="5" />
+                </Grid>
+            </StackPanel>
+        </Grid>
+        <StackPanel Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Stretch">
+            <Label Content="{Binding CurrentFileBeingProcessed}" />
+            <ProgressBar Minimum="0" Maximum="100" Margin="5" />
+            <TextBlock Text="{Binding ExtendedStatus}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
+            <Button IsDefault="True" Command="{Binding Convert}" Content="Commencer la conversion" IsEnabled="{Binding IsNotOccupied}" Margin="5" />
+            <Button IsCancel="True" Content="Fermer" Command="{Binding Close}" Margin="5"  IsEnabled="{Binding IsNotOccupied}" />
+        </StackPanel>
+    </Grid>
+</Window>
