@@ -2,20 +2,40 @@
 {
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
+    using GalaSoft.MvvmLight.Ioc;
+
+    using Microsoft.Win32;
 
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using System.Windows;
 
-    public class BindableFileInfo : ObservableObject
+    public class FileInfoViewModel : ViewModelBase
     {
+        private string _fullFilePath = "";
+
+        public FileInfo Info => new FileInfo(_fullFilePath);
+
         private string _name = "";
 
         public string Name { get => _name; set { Set(nameof(Name), ref _name, value); } }
+
+        public RelayCommand RemoveSourceFile { get; internal set; }
+
+        public FileInfoViewModel(string fullFilePath)
+        {
+            if(string.IsNullOrWhiteSpace(fullFilePath) || File.Exists(fullFilePath) == false)
+            {
+                throw new FileNotFoundException(fullFilePath);
+            }
+            _fullFilePath = fullFilePath;
+            RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
+        }
     }
 
     public class MainViewModel : ViewModelBase
@@ -48,13 +68,13 @@
 
         public string CurrentFileBeingProcessed { get => _currentFileBeingProcessed; set { Set(nameof(CurrentFileBeingProcessed), ref _currentFileBeingProcessed, value); } }
 
-        private ObservableCollection<BindableFileInfo> _sourceFiles = new ObservableCollection<BindableFileInfo>();
+        private ObservableCollection<FileInfoViewModel> _sourceFiles = new ObservableCollection<FileInfoViewModel>();
 
-        public ObservableCollection<BindableFileInfo> SourceFiles { get => _sourceFiles; internal set { Set(nameof(SourceFiles), ref _sourceFiles, value); } }
+        public ObservableCollection<FileInfoViewModel> SourceFiles { get => _sourceFiles; internal set { Set(nameof(SourceFiles), ref _sourceFiles, value); } }
 
-        private ObservableCollection<BindableFileInfo> _destFiles = new ObservableCollection<BindableFileInfo>();
+        private ObservableCollection<FileInfoViewModel> _destFiles = new ObservableCollection<FileInfoViewModel>();
 
-        public ObservableCollection<BindableFileInfo> DestFiles { get => _destFiles; internal set { Set(nameof(DestFiles), ref _destFiles, value); } }
+        public ObservableCollection<FileInfoViewModel> DestFiles { get => _destFiles; internal set { Set(nameof(DestFiles), ref _destFiles, value); } }
 
         private string _destFolder = "";
 
@@ -62,23 +82,44 @@
 
         public RelayCommand Close { get; internal set; } = new RelayCommand(() => Application.Current.MainWindow.Close());
 
-        public RelayCommand Convert { get; internal set; } = new RelayCommand(ConvertMethod);
+        public RelayCommand Convert { get; internal set; }
+
+        public RelayCommand PickSourceFiles { get; internal set; }
 
         private static void ConvertMethod()
         {
             throw new NotImplementedException();
         }
 
-        public RelayCommand PickDestFolder { get; internal set; } = new RelayCommand(PickDestFolderMethod);
+        public RelayCommand PickDestFolder { get; internal set; }
 
-        private static void PickDestFolderMethod()
+        private void PickDestFolderMethod()
         {
-            throw new NotImplementedException();
+            var ofd = new OpenFileDialog();
+            ofd.CheckPathExists = true;
+            ofd.Title = "Dossier de destination...";
+            ofd.InitialDirectory = Path.GetDirectoryName(_sourceFiles.FirstOrDefault()?.Info.FullName);
+            if (ofd.ShowDialog() == true)
+            {
+
+            }
         }
 
         public MainViewModel()
         {
+            PickDestFolder = new RelayCommand(PickDestFolderMethod);
+            PickSourceFiles = new RelayCommand(PickSourceFilesMethod);
+            Convert = new RelayCommand(ConvertMethod);
+        }
 
+        private void PickSourceFilesMethod()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveSourceFile(FileInfoViewModel mainViewModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

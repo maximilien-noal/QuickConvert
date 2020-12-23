@@ -30,7 +30,14 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch">
-                <Label>Fichier(s) à convertir</Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">Fichier(s) à convertir</Label>
+                    <Button Grid.Column="1" Content="Sélectionner..." Command="{Binding PickSourceFiles}" />
+                </Grid>
                 <ListView ItemsSource="{Binding SourceFiles}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -40,11 +47,14 @@
                 </ListView>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Stretch">
-                <Label>Noms des fichiers</Label>
+                <Label>Nom des fichiers en sortie</Label>
                 <ListView ItemsSource="{Binding DestFiles}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Name}" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <TextBox Text="{Binding Name}" />
+                                <Button Content="X" Command="{Binding RemoveSourceFile}" />
+                            </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -61,7 +71,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" Text="{Binding DestFolder}" />
-                    <Button Grid.Column="1" Content="..." Command="{Binding PickDestFolder}" Margin="5" />
+                    <Button Grid.Column="1" Content="Sélectionner..." Command="{Binding PickDestFolder}" Margin="5" />
                 </Grid>
             </StackPanel>
         </Grid>
