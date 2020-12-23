@@ -1,5 +1,7 @@
 ﻿namespace QuickConvert
 {
+    using GalaSoft.MvvmLight.Ioc;
+
     using Microsoft.Win32;
 
     using Serilog;
@@ -21,7 +23,7 @@
 
         private Uri? _currentTheme;
 
-        private Logger _logger;
+        private readonly Logger _logger;
 
         public App()
         {
@@ -56,12 +58,10 @@
                 WatchTheme();
                 CHangeThemeIfWindowsChangedIt();
             }
-#pragma warning disable CA1031 // Do not catch general exception types
             catch
             {
                 //No OS support for themes. Not worth crashing for.
             }
-#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         private static void ChangeTheme(Uri theme)
@@ -103,9 +103,7 @@
         private void OnWpfUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             _logger.Error(e.Exception.GetBaseException(), "An unhandled exception occured");
-#pragma warning disable CA1303 // Do not pass literals as localized parameters
             MessageBox.Show(e.Exception.GetBaseException().GetType().ToString() + Environment.NewLine + e.Exception.GetBaseException().Message, "Une erreur est survenue. Opération annulée.");
-#pragma warning restore CA1303 // Do not pass literals as localized parameters
             e.Handled = true;
         }
 
@@ -156,7 +154,6 @@
             /// The resource dictionary containing AdonisUI's resources. Expected are the resource
             /// dictionaries of the app or window.
             /// </param>
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception")]
             public static void RemoveAdonisResources(ResourceDictionary rootResourceDictionary)
             {
                 Uri[] adonisResources = { ClassicTheme };
@@ -186,7 +183,6 @@
             /// <param name="currentColorSchemeResourceUri">
             /// Optional uri to an external color scheme that is not provided by AdonisUI.
             /// </param>
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Exception")]
             public static void SetColorScheme(ResourceDictionary rootResourceDictionary, Uri colorSchemeResourceUri, Uri? currentColorSchemeResourceUri = null)
             {
                 var knownColorSchemes = currentColorSchemeResourceUri != null ? new[] { currentColorSchemeResourceUri } : new[] { LightColorScheme, DarkColorScheme };
@@ -210,9 +206,7 @@
 
                 if (!resourceDictionary.MergedDictionaries.Any())
                 {
-#pragma warning disable S1168 // Empty arrays and collections should be returned instead of null (not returning null breaks AdonisUI)
                     return null;
-#pragma warning restore S1168 // Empty arrays and collections should be returned instead of null (not returning null breaks AdonisUI)
                 }
 
                 return resourceDictionary.MergedDictionaries.FirstOrDefault(d => FindFirstContainedResourceDictionaryByUri(d, knownColorSchemes) != null);
@@ -233,6 +227,11 @@
 
                 return rootResourceDictionary.MergedDictionaries.Any(dict => RemoveResourceDictionaryFromResourcesDeep(resourceDictionaryToRemove, dict));
             }
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            SimpleIoc.Default.Register(() => e);
         }
     }
 }

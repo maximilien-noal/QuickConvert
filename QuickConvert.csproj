@@ -4,12 +4,14 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Quick.ico</ApplicationIcon>
     <PublishReadyToRun>True</PublishReadyToRun>
     <Version>0.1</Version>
     <AssemblyName>QuickConvert</AssemblyName>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <StartupObject>QuickConvert.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="3.3.0" />
-    <PackageReference Include="fforjan.staticffmpeg.windows" Version="4.3.1" />
+    <PackageReference Include="FFmpeg.Win64.Static" Version="4.1.1.1" />
     <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="5.0.2" />
     <PackageReference Include="MvvmLightStd10" Version="5.4.1.2" />
     <PackageReference Include="System.Management" Version="5.0.0" />
