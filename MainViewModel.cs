@@ -139,7 +139,6 @@
             }
             try
             {
-                var tasks = new List<Task<bool>>();
                 for (int i = 0; i < SourceFiles.Count; i++)
                 {
                     FileInfoViewModel? sourcefile = SourceFiles[i];
@@ -161,40 +160,37 @@
                         {
                             File.Delete(destFile);
                         }
-                        var task = new Task<bool>(() =>
+
+                        while (File.Exists(destFile))
                         {
-                            try
-                            {
-                                while (File.Exists(destFile))
-                                {
-                                    var fileAlone = Path.GetFileNameWithoutExtension(destFile);
-                                    var extension = Path.GetExtension(destFile);
-                                    var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
-                                    Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
-                                    destFile = Path.Combine(destFolder, $"{fileAlone}_{date}_{extension}");
-                                }
-                                return FFMpegArguments
-                                    .FromFileInput(sourcefile.Info.FullName)
-                                    .OutputToFile(destFile, false, options => options
-                                        .WithAudioCodec(AudioCodec.LibMp3Lame)
-                                        .WithAudioBitrate(Bitrate)
-                                        .WithFastStart())
-                                    .ProcessSynchronously();
-                            }
-                            catch (Exception e)
-                            {
-                                Serilog.Log.Error("Erreur conversion {Exception}:", e);
-                                Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
-                                return false;
-                            }
-                        });
-                        tasks.Add(task);
+                            var fileAlone = Path.GetFileNameWithoutExtension(destFile);
+                            var extension = Path.GetExtension(destFile);
+                            var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
+                            Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
+                            destFile = Path.Combine(destFolder, $"{fileAlone}_{date}_{extension}");
+                        }
+                        var ffmpegProc = FFMpegArguments
+                            .FromFileInput(sourcefile.Info.FullName)
+                            .OutputToFile(destFile, false, options => options
+                                .WithAudioCodec(AudioCodec.LibMp3Lame)
+                                .WithAudioBitrate(Bitrate)
+                                .WithFastStart());
+                        var task = ffmpegProc.ProcessAsynchronously();
+
                         var awaiter = task.GetAwaiter();
                         awaiter.OnCompleted(() => UpdateProgressAndLogs(i, task, sourcefile, destFile));
+                        try
+                        {
+                            await task.ConfigureAwait(true);
+                        }
+                        catch (Exception e)
+                        {
+                            Serilog.Log.Error("Erreur conversion {Exception}:", e);
+                            Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
+                            UpdateLogs(task, sourcefile, destFile);
+                        }
                     }
                 }
-                tasks.ForEach(x => x.Start());
-                await Task.WhenAll(tasks).ConfigureAwait(true);
             }
             catch (Exception e)
             {
