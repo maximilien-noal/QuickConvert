@@ -335,13 +335,39 @@
             fileInfoVm.ShortFileName = Path.GetFileName(fileInfoVm.Info.FullName);
             if (fileInfoVm.ShortFileName.Length > ShortFileNameCharLimit)
             {
-                var extension = Path.GetExtension(fileInfoVm.ShortFileName);
-                var trimedName = Path.GetFileNameWithoutExtension(fileInfoVm.ShortFileName).Trim().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
-                fileInfoVm.ShortFileName = $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}{extension}";
+                fileInfoVm.ShortFileName = GetShortFileName(fileInfoVm);
             }
             SourceFiles.Add(fileInfoVm);
             DestFiles.Add(fileInfoVm);
         }
+
+        private string GetShortFileName(FileInfoViewModel fileInfoVm)
+        {
+            var extension = Path.GetExtension(fileInfoVm.ShortFileName);
+            string trimedName = GetTrimedName(fileInfoVm);
+            int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName) == Path.GetFileNameWithoutExtension(trimedName));
+            while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName) == Path.GetFileNameWithoutExtension(trimedName)))
+            {
+                trimedName = GetTrimedName(fileInfoVm, offset++);
+            }
+            return $"{trimedName}{extension}";
+        }
+
+        private string GetTrimedName(FileInfoViewModel fileInfoVm, int offset = 0)
+        {
+            if (offset == 0)
+            {
+                var trimedName = GetNameWithoutSpaces(fileInfoVm);
+                return $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}";
+            }
+            else
+            {
+                var trimedName = GetNameWithoutSpaces(fileInfoVm);
+                return $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}_{offset}";
+            }
+        }
+
+        private static string GetNameWithoutSpaces(FileInfoViewModel fileInfoVm) => Path.GetFileNameWithoutExtension(fileInfoVm.ShortFileName).Trim().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
 
         public void RemoveSourceFile(FileInfoViewModel fileInfoVm)
         {
