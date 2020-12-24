@@ -102,7 +102,7 @@
                             <StackPanel Orientation="Vertical">
                                 <CheckBox IsChecked="{Binding UseSourceFolderAsDest}" Margin="5">
                                     <CheckBox.Content>
-                                        <TextBlock TextWrapping="Wrap" ToolTip="Créé un sous-dossier QuickConvert dans le dossier source" Text="Utiliser le dossier source des fichiers" />
+                                        <TextBlock TextWrapping="Wrap" ToolTip="Créé un sous-dossier 'QuickConverterJob' dans le dossier source" Text="Utiliser le dossier source des fichiers" />
                                     </CheckBox.Content>
                                 </CheckBox>
                                 <TextBox IsEnabled="{Binding UseSourceFolderAsDest, Converter={StaticResource BooleanToInvertBooleanConverter}}" Text="{Binding DestFolder, UpdateSourceTrigger=PropertyChanged}" />

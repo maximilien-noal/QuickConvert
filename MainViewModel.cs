@@ -167,12 +167,11 @@
                             {
                                 while (File.Exists(destFile))
                                 {
-                                    var dir = Path.GetDirectoryName(destFile);
                                     var fileAlone = Path.GetFileNameWithoutExtension(destFile);
                                     var extension = Path.GetExtension(destFile);
                                     var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
                                     Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
-                                    destFile = Path.Combine(dir ?? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), $"{fileAlone}_{date}_{extension}");
+                                    destFile = Path.Combine(destFolder, $"{fileAlone}_{date}_{extension}");
                                 }
                                 return FFMpegArguments
                                     .FromFileInput(sourcefile.Info.FullName)
@@ -211,7 +210,7 @@
 
         private static string GetSubFolder(FileInfoViewModel sourcefile)
         {
-            return Path.Combine(Path.GetDirectoryName(sourcefile.Info.FullName) ?? "./", "QuickConverter");
+            return Path.Combine(Path.GetDirectoryName(sourcefile.Info.FullName) ?? "./", "QuickConverterJob");
         }
 
         private void UpdateProgressAndLogs(int i, Task<bool> completedTask, FileInfoViewModel sourcefile, string destFile)
