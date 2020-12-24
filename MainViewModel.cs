@@ -77,7 +77,7 @@
 
         public ObservableCollection<LogEntry> Logs { get => _logs; internal set { Set(nameof(Logs), ref _logs, value); } }
 
-        private int _shortFileNameCharLimit = 20;
+        private int _shortFileNameCharLimit = 15;
 
         public int ShortFileNameCharLimit { get => _shortFileNameCharLimit; set { Set(nameof(ShortFileNameCharLimit), ref _shortFileNameCharLimit, value); } }
 
