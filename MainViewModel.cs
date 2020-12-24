@@ -56,6 +56,47 @@
         public RelayCommand RemoveSourceFile { get; internal set; }
         public RelayCommand PlaySourceFile { get; internal set; }
 
+        public string GetSubFolder()
+        {
+            return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", "QuickConverterJob");
+        }
+
+        public string DestFile => GetDestFile(SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.IndexOf(this));
+
+        public string GetDestFile(int i)
+        {
+            string destFolder = GetDestFolder();
+            var destfileName = SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.ElementAt(i).ShortFileName;
+            var destFile = Path.Combine(destFolder, destfileName);
+            return destFile;
+        }
+
+        private string GetDestFolder()
+        {
+            string destFolder = SimpleIoc.Default.GetInstance<MainViewModel>().DestFolder;
+            if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest)
+            {
+                destFolder = GetSubFolder();
+            }
+
+            return destFolder;
+        }
+
+        public string GetDestFileNameForConversion(int i)
+        {
+            var destFile = GetDestFile(i);
+            while (File.Exists(destFile))
+            {
+                var fileAlone = Path.GetFileNameWithoutExtension(destFile);
+                var extension = Path.GetExtension(destFile);
+                var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
+                Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
+                destFile = Path.Combine(GetDestFolder(), $"{fileAlone}_{date}_{extension}");
+            }
+
+            return destFile;
+        }
+
         public FileInfoViewModel(string fullFilePath)
         {
             if (string.IsNullOrWhiteSpace(fullFilePath) || File.Exists(fullFilePath) == false)
@@ -65,6 +106,7 @@
             Info = new FileInfo(fullFilePath);
             Name = Path.GetFileName(fullFilePath);
             FullPath = fullFilePath;
+
             RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
             PlaySourceFile = new RelayCommand(() => Process.Start(new ProcessStartInfo(Info.FullName) { UseShellExecute = true }));
         }
@@ -146,6 +188,8 @@
 
         public RelayCommand DeleteAllSourceFiles { get; internal set; }
 
+        private readonly string[] _extensions = new string[] { ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
+
         private async Task ConvertMethodAsync()
         {
             IsBusy = true;
@@ -164,31 +208,17 @@
                     FileInfoViewModel? sourcefile = SourceFiles[i];
                     if (File.Exists(sourcefile.Info.FullName))
                     {
-                        string subFolder = GetSubFolder(sourcefile);
-                        string destFolder = DestFolder;
-                        if (UseSourceFolderAsDest)
-                        {
-                            destFolder = subFolder;
-                        }
+                        var subFolder = sourcefile.GetSubFolder();
                         if (UseSourceFolderAsDest && Directory.Exists(subFolder) == false)
                         {
                             Directory.CreateDirectory(subFolder);
                         }
-                        var destfileName = DestFiles.ElementAt(i).ShortFileName;
-                        var destFile = Path.Combine(destFolder, destfileName);
-                        if (UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
+                        var destFile = sourcefile.GetDestFile(i);
+                        if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
                         {
                             File.Delete(destFile);
                         }
-
-                        while (File.Exists(destFile))
-                        {
-                            var fileAlone = Path.GetFileNameWithoutExtension(destFile);
-                            var extension = Path.GetExtension(destFile);
-                            var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
-                            Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
-                            destFile = Path.Combine(destFolder, $"{fileAlone}_{date}_{extension}");
-                        }
+                        destFile = sourcefile.GetDestFileNameForConversion(i);
                         var ffmpegProc = FFMpegArguments
                             .FromFileInput(sourcefile.Info.FullName)
                             .OutputToFile(destFile, false, options => options
@@ -222,11 +252,6 @@
             {
                 IsBusy = false;
             }
-        }
-
-        private static string GetSubFolder(FileInfoViewModel sourcefile)
-        {
-            return Path.Combine(Path.GetDirectoryName(sourcefile.Info.FullName) ?? "./", "QuickConverterJob");
         }
 
         private void UpdateProgressAndLogs(int i, Task<bool> completedTask, FileInfoViewModel sourcefile, string destFile)
@@ -306,7 +331,10 @@
                 {
                     foreach (var file in Directory.GetFiles(fbd.SelectedPath))
                     {
-                        AddFileToSourceAndDest(file);
+                        if (_extensions.Contains(Path.GetExtension(file)))
+                        {
+                            AddFileToSourceAndDest(file);
+                        }
                     }
                 }
             }
@@ -321,13 +349,13 @@
             }
             else if (sourceFile != null)
             {
-                var destFolder = GetSubFolder(sourceFile);
+                var destFolder = sourceFile.GetSubFolder();
                 Directory.CreateDirectory(destFolder);
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = Path.GetDirectoryName(destFolder) ?? destFolder, UseShellExecute = true });
+                Process.Start(new ProcessStartInfo { FileName = Path.GetDirectoryName(destFolder) ?? destFolder, UseShellExecute = true });
             }
             else if (Directory.Exists(DestFolder))
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = DestFolder, UseShellExecute = true });
+                Process.Start(new ProcessStartInfo { FileName = DestFolder, UseShellExecute = true });
             }
             else
             {

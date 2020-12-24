@@ -82,7 +82,7 @@
                         <ListBox ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" ItemsSource="{Binding DestFiles}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:FileInfoViewModel}">
-                                    <TextBox>
+                                    <TextBox ToolTip="{Binding DestFile}">
                                         <TextBox.Text>
                                             <Binding
                                                     Path="ShortFileName"
