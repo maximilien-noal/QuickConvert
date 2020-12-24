@@ -127,6 +127,8 @@
 
         public AsyncCommand Convert { get; internal set; }
 
+        public RelayCommand PickSourceFolder { get; internal set; }
+
         public RelayCommand PickSourceFiles { get; internal set; }
 
         public RelayCommand DeleteAllSourceFiles { get; internal set; }
@@ -271,9 +273,30 @@
             FFMpegOptions.Configure(new FFMpegOptions { RootDirectory = ffmpegFolder, TempDirectory = Path.GetTempPath() });
             PickDestFolder = new RelayCommand(PickDestFolderMethod);
             PickSourceFiles = new RelayCommand(PickSourceFilesMethod);
+            PickSourceFolder = new RelayCommand(PickSourceFolderMethod);
             Convert = new AsyncCommand(ConvertMethodAsync);
             DeleteAllSourceFiles = new RelayCommand(DeleteAllSourceFilesMethod);
             OpenDestFolder = new RelayCommand(OpenDestFolderExecute);
+        }
+
+        private void PickSourceFolderMethod()
+        {
+            var fbd = new FolderBrowserDialog()
+            {
+                Description = "Ajouter des fichiers source...",
+                UseDescriptionForTitle = true,
+                RootFolder = Environment.SpecialFolder.MyMusic
+            };
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                if (string.IsNullOrWhiteSpace(fbd.SelectedPath) == false && Directory.Exists(fbd.SelectedPath))
+                {
+                    foreach (var file in Directory.GetFiles(fbd.SelectedPath))
+                    {
+                        AddFileToSourceAndDest(file);
+                    }
+                }
+            }
         }
 
         private void OpenDestFolderExecute()
