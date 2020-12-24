@@ -75,7 +75,17 @@
 
         private ObservableCollection<LogEntry> _logs = new ObservableCollection<LogEntry>();
 
-        public ObservableCollection<LogEntry> Logs { get => _logs; internal set { Set(nameof(Logs), ref _logs, value); } }
+        public ObservableCollection<LogEntry> Logs
+        {
+            get
+            {
+                return _logs;
+            }
+            internal set
+            {
+                Set(nameof(Logs), ref _logs, value);
+            }
+        }
 
         private int _shortFileNameCharLimit = 15;
 
@@ -336,6 +346,7 @@
                 Multiselect = true,
                 CheckFileExists = true,
                 DereferenceLinks = true,
+                Filter = "Fichier audio ou vidéo (*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg)|*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg|Tous les types de fichiers (*.*)|*.*",
                 InitialDirectory = SourceFiles.Any() ? Path.GetDirectoryName(SourceFiles.Last().Info.FullName) : Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
             };
             if (ofd.ShowDialog() == DialogResult.OK)
