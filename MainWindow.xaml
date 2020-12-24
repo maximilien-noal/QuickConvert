@@ -6,6 +6,7 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:local="clr-namespace:QuickConvert"
         xmlns:converters="clr-namespace:QuickConvert.Converters"
+        xmlns:validationRules="clr-namespace:QuickConvert.ValidationRules"
         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         mc:Ignorable="d"
@@ -67,7 +68,21 @@
                             <ListBox ItemsSource="{Binding DestFiles}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type local:FileInfoViewModel}">
-                                        <TextBox Text="{Binding ShortFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBox>
+                                            <TextBox.Text>
+                                                <Binding
+                                                    Path="ShortFileName"
+                                                    Mode="TwoWay"
+                                                    UpdateSourceTrigger="PropertyChanged"
+                                                    ValidatesOnNotifyDataErrors="True"
+                                                    ValidatesOnDataErrors="True"
+                                                    NotifyOnValidationError="True">
+                                                    <Binding.ValidationRules>
+                                                        <validationRules:FileNameValidationRule ValidatesOnTargetUpdated="True" />
+                                                    </Binding.ValidationRules>
+                                                </Binding>
+                                            </TextBox.Text>
+                                        </TextBox>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>

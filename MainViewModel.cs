@@ -157,24 +157,51 @@
                         }
                         var destfileName = DestFiles.ElementAt(i).ShortFileName;
                         var destFile = Path.Combine(destFolder, destfileName);
-                        var task = FFMpegArguments
-                        .FromFileInput(sourcefile.Info.FullName)
-                        .OutputToFile(destFile, false, options => options
-                            .WithConstantRateFactor(21)
-                            .WithAudioCodec(AudioCodec.LibMp3Lame)
-                            .WithAudioBitrate(Bitrate)
-                            .WithFastStart()).ProcessAsynchronously();
+                        if (UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
+                        {
+                            File.Delete(destFile);
+                        }
+                        var task = new Task<bool>(() =>
+                        {
+                            try
+                            {
+                                while (File.Exists(destFile))
+                                {
+                                    var dir = Path.GetDirectoryName(destFile);
+                                    var fileAlone = Path.GetFileNameWithoutExtension(destFile);
+                                    var extension = Path.GetExtension(destFile);
+                                    var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
+                                    Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
+                                    destFile = Path.Combine(dir ?? Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), $"{fileAlone}_{date}_{extension}");
+                                }
+                                return FFMpegArguments
+                                    .FromFileInput(sourcefile.Info.FullName)
+                                    .OutputToFile(destFile, false, options => options
+                                        .WithAudioCodec(AudioCodec.LibMp3Lame)
+                                        .WithAudioBitrate(Bitrate)
+                                        .WithFastStart())
+                                    .ProcessSynchronously();
+                            }
+                            catch (Exception e)
+                            {
+                                Serilog.Log.Error("Erreur conversion {Exception}:", e);
+                                Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
+                                return false;
+                            }
+                        });
                         tasks.Add(task);
                         var awaiter = task.GetAwaiter();
                         awaiter.OnCompleted(() => UpdateProgressAndLogs(i, task, sourcefile, destFile));
                     }
                 }
+                tasks.ForEach(x => x.Start());
                 await Task.WhenAll(tasks).ConfigureAwait(true);
             }
             catch (Exception e)
             {
-                System.Windows.MessageBox.Show(e.Message);
+                System.Windows.MessageBox.Show(e.GetBaseException().Message, e.GetBaseException().GetType().ToString());
                 Serilog.Log.Error("Erreur conversion {Exception}:", e);
+                Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
             }
             finally
             {
