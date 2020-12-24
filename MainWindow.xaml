@@ -113,7 +113,7 @@
                         <ComboBox Grid.Row="1" ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
                         <Label Grid.Row="2">Bitrate (détermine la taille et la qualité)</Label>
                         <ComboBox Grid.Row="3" ItemsSource="{Binding Bitrates}" SelectedItem="{Binding Bitrate}" />
-                        <Label Grid.Row="4">Limite de caractères (avec .EXT)</Label>
+                        <Label Grid.Row="4">Limite de caractères (avec l'extension)</Label>
                         <TextBox Grid.Row="5" Text="{Binding ShortFileNameCharLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <GroupBox Grid.Row="6">
                             <GroupBox.Header>
