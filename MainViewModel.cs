@@ -11,6 +11,7 @@
 
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -53,6 +54,7 @@
         public string ShortFileName { get => _shortFileName; set { Set(nameof(ShortFileName), ref _shortFileName, value); } }
 
         public RelayCommand RemoveSourceFile { get; internal set; }
+        public RelayCommand PlaySourceFile { get; internal set; }
 
         public FileInfoViewModel(string fullFilePath)
         {
@@ -64,6 +66,7 @@
             Name = Path.GetFileName(fullFilePath);
             FullPath = fullFilePath;
             RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
+            PlaySourceFile = new RelayCommand(() => Process.Start(new ProcessStartInfo(Info.FullName) { UseShellExecute = true }));
         }
     }
 
@@ -286,7 +289,7 @@
             PickSourceFolder = new RelayCommand(PickSourceFolderMethod);
             Convert = new AsyncCommand(ConvertMethodAsync);
             DeleteAllSourceFiles = new RelayCommand(DeleteAllSourceFilesMethod);
-            OpenDestFolder = new RelayCommand(OpenDestFolderExecute);
+            OpenDestFolder = new RelayCommand(OpenDestFolderMethod);
         }
 
         private void PickSourceFolderMethod()
@@ -309,7 +312,7 @@
             }
         }
 
-        private void OpenDestFolderExecute()
+        private void OpenDestFolderMethod()
         {
             var sourceFile = SelectedSourceFile is null ? DestFiles.FirstOrDefault() : SelectedSourceFile;
             if (string.IsNullOrWhiteSpace(DestFolder) && !UseSourceFolderAsDest)

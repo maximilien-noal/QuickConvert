@@ -62,10 +62,12 @@
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <Button Grid.Column="0" Content="Suppr." Command="{Binding RemoveSourceFile}" />
-                                        <TextBlock Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center" ToolTip="{Binding FullPath}" Text="{Binding Name}" />
+                                        <Button Grid.Column="0" Margin="5" Content="Suppr." Command="{Binding RemoveSourceFile}" />
+                                        <Button Grid.Column="1" Margin="5" Content="Lire" Command="{Binding PlaySourceFile}" />
+                                        <TextBlock Grid.Column="2" Margin="5,0,0,0" VerticalAlignment="Center" ToolTip="{Binding FullPath}" Text="{Binding Name}" />
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
