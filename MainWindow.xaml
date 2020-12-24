@@ -23,6 +23,7 @@
         <converters:BooleanToInvertBooleanConverter x:Key="BooleanToInvertBooleanConverter" />
         <converters:TaskStatusToFrenchConverter x:Key="TaskStatusToFrenchConverter" />
         <converters:BooleanToInvertVisibilityConverter x:Key="BooleanToInvertVisibilityConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <TabControl>
         <TabItem Header="Convertisseur">
@@ -143,17 +144,10 @@
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="1" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToInvertVisibilityConverter}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" HorizontalAlignment="Center">
-                            <Run Text="{Binding LastProcessedFile}" />
-                            <Run Text=" - Fait" />
-                    </TextBlock>
-                    <ProgressBar Grid.Row="1" HorizontalAlignment="Center" Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
-                </Grid>
+                <StackPanel Orientation="Vertical" Grid.Row="1" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock HorizontalAlignment="Center" Text="{Binding LastProcessedFile}" />
+                    <ProgressBar HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
+                </StackPanel>
             </Grid>
         </TabItem>
         <TabItem Header="Journal">

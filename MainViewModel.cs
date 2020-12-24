@@ -67,7 +67,7 @@
         }
     }
 
-    public class MainViewModel : ViewModelBase, IProgress<Tuple<int, string>>
+    public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     {
         private FileInfoViewModel? _selectedSourceFile;
 
@@ -216,7 +216,7 @@
 
         private void UpdateProgressAndLogs(int i, Task<bool> completedTask, FileInfoViewModel sourcefile, string destFile)
         {
-            var percentage = i / SourceFiles.Count * 100;
+            var percentage = (double)i / SourceFiles.Count * 100;
             Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
             UpdateLogs(completedTask, sourcefile, destFile);
         }
@@ -383,11 +383,11 @@
             }
         }
 
-        private int _percentage;
+        private double _percentage;
 
-        public int Percentage { get => _percentage; set { Set(nameof(Percentage), ref _percentage, value); } }
+        public double Percentage { get => _percentage; set { Set(nameof(Percentage), ref _percentage, value); } }
 
-        public void Report(Tuple<int, string> value)
+        public void Report(Tuple<double, string> value)
         {
             if (value is null)
             {
