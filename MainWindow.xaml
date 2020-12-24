@@ -50,7 +50,7 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0">Fichier(s) à convertir</Label>
+                            <Label Grid.Column="0" VerticalAlignment="Center">Fichier(s) à convertir</Label>
                             <Button Grid.Column="1" Margin="5" Content="Ajouter..." Command="{Binding PickSourceFiles}" />
                             <Button Grid.Column="2" Margin="5" Content="Ajouter un dossier..." Command="{Binding PickSourceFolder}" />
                             <Button Grid.Column="3" Margin="5" Content="Tout supprimer" Command="{Binding DeleteAllSourceFiles}" />
@@ -75,7 +75,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0">Nom des fichiers en sortie</Label>
+                        <Label Grid.Row="0" VerticalAlignment="Center">Nom des fichiers en sortie</Label>
                         <ListBox ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Grid.Row="1" ItemsSource="{Binding DestFiles}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:FileInfoViewModel}">
@@ -109,7 +109,7 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Label Grid.Row="0">Format de sortie</Label>
+                        <Label Grid.Row="0" VerticalAlignment="Center">Format de sortie</Label>
                         <ComboBox Grid.Row="1" ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
                         <Label Grid.Row="2">Bitrate (détermine la taille et la qualité)</Label>
                         <ComboBox Grid.Row="3" ItemsSource="{Binding Bitrates}" SelectedItem="{Binding Bitrate}" />
