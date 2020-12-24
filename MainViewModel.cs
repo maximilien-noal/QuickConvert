@@ -40,6 +40,10 @@
     {
         public FileInfo Info { get; }
 
+        private string _fullPath = "";
+
+        public string FullPath { get => _fullPath; set { Set(nameof(FullPath), ref _fullPath, value); } }
+
         private string _name = "";
 
         public string Name { get => _name; set { Set(nameof(Name), ref _name, value); } }
@@ -57,7 +61,8 @@
                 throw new FileNotFoundException(fullFilePath);
             }
             Info = new FileInfo(fullFilePath);
-            Name = fullFilePath;
+            Name = Path.GetFileName(fullFilePath);
+            FullPath = fullFilePath;
             RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
         }
     }
