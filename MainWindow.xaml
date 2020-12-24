@@ -23,6 +23,7 @@
     <Window.Resources>
         <converters:BooleanToInvertBooleanConverter x:Key="BooleanToInvertBooleanConverter" />
         <converters:TaskStatusToFrenchConverter x:Key="TaskStatusToFrenchConverter" />
+        <converters:BooleanToInvertVisibilityConverter x:Key="BooleanToInvertVisibilityConverter" />
     </Window.Resources>
     <TabControl>
         <TabItem Header="Convertisseur">
@@ -113,10 +114,10 @@
                     </StackPanel>
                 </Grid>
                 <StackPanel Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Stretch" IsEnabled="{Binding IsBusy}">
-                    <TextBlock>
-                        <Run Text="{Binding LastProcessedFile}" />
-                        <Run Text=" - Fait" />
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding LastProcessedFile}" />
+                        <TextBlock Text=" - Fait" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToInvertVisibilityConverter}}" />
+                    </StackPanel>
                     <ProgressBar Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
