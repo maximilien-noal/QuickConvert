@@ -10,7 +10,7 @@
         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
         mc:Ignorable="d"
-        Title="Convertisseur rapide de fichiers multimédia"
+        Title="Convertisseur rapide de fichiers audio ou vidéo"
         MinWidth="700"
         MinHeight="300"
         Icon="Assets/appicon.png"
@@ -30,6 +30,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
@@ -64,7 +65,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Button Grid.Column="0" Content="Suppr." Command="{Binding RemoveSourceFile}" />
-                                        <TextBlock Grid.Column="1" Margin="5,0,0,0" ToolTip="{Binding FullPath}" Text="{Binding Name}" />
+                                        <TextBlock Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center" ToolTip="{Binding FullPath}" Text="{Binding Name}" />
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -107,7 +108,6 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0" VerticalAlignment="Center">Format de sortie</Label>
                         <ComboBox Grid.Row="1" ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
@@ -141,14 +141,16 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="5" IsDefault="True" Command="{Binding Convert}" Content="Commencer la conversion" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
-                            <Button Grid.Column="1" Margin="5" IsCancel="True" Content="Fermer" Command="{Binding Close}" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
                         </Grid>
                     </Grid>
                 </Grid>
                 <StackPanel Orientation="Vertical" Grid.Row="1" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock HorizontalAlignment="Center" Text="{Binding LastProcessedFile}" />
                     <ProgressBar HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
+                    <Button Margin="5" IsDefault="True" Command="{Binding Convert}" Content="Commencer la conversion" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
+                    <Button Margin="5" IsCancel="True" Content="Fermer" Command="{Binding Close}" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
                 </StackPanel>
             </Grid>
         </TabItem>
@@ -157,19 +159,20 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:LogEntry}">
                         <Grid>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="{Binding SourceFile}" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock>
-                                        <Run Text="Destination: " />
-                                        <Run Text="{Binding DestFile}" />
-                                </TextBlock>
-                                <TextBlock>
-                                        <Run Text="Conversion Réussie ? " />
-                                        <Run Text="{Binding TaskStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
-                                </TextBlock>
-                            </StackPanel>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Content="Fichier source : " />
+                            <TextBlock Grid.Row="1" Text="{Binding SourceFile}" />
+                            <Label Grid.Row="2" Content="Fichier de destination : " />
+                            <TextBlock Grid.Row="3" Text="{Binding DestFile}" />
+                            <Label Grid.Row="4" Content="Conversion Réussie : " />
+                            <TextBlock Grid.Row="5" Text="{Binding TaskStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
