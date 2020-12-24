@@ -10,7 +10,6 @@
     using GalaSoft.MvvmLight.Ioc;
 
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
@@ -20,6 +19,7 @@
     using System.Windows.Forms;
 
     using Application = System.Windows.Application;
+    using MessageBox = System.Windows.MessageBox;
 
     public class LogEntry : ObservableObject
     {
@@ -138,7 +138,7 @@
             LastProcessedFile = "";
             if (SourceFiles.Any(x => File.Exists(x.Info.FullName)) == false)
             {
-                System.Windows.MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
                 IsBusy = false;
                 return;
             }
@@ -199,7 +199,7 @@
             }
             catch (Exception e)
             {
-                System.Windows.MessageBox.Show(e.GetBaseException().Message, e.GetBaseException().GetType().ToString());
+                MessageBox.Show(e.GetBaseException().Message, e.GetBaseException().GetType().ToString());
                 Serilog.Log.Error("Erreur conversion {Exception}:", e);
                 Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
             }
@@ -281,7 +281,7 @@
             var sourceFile = SelectedSourceFile is null ? DestFiles.FirstOrDefault() : SelectedSourceFile;
             if (string.IsNullOrWhiteSpace(DestFolder) && !UseSourceFolderAsDest)
             {
-                System.Windows.MessageBox.Show("Dossier non renseigné ou introuvable.");
+                MessageBox.Show("Dossier non renseigné ou introuvable.");
             }
             else if (sourceFile != null)
             {
@@ -295,7 +295,7 @@
             }
             else
             {
-                System.Windows.MessageBox.Show("Dossier non renseigné ou introuvable.");
+                MessageBox.Show("Dossier non renseigné ou introuvable.");
             }
         }
 
