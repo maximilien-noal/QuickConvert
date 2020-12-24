@@ -38,9 +38,7 @@
 
     public class FileInfoViewModel : ViewModelBase
     {
-        private readonly string _fullFilePath = "";
-
-        public FileInfo Info => new FileInfo(_fullFilePath);
+        public FileInfo Info { get; }
 
         private string _name = "";
 
@@ -58,13 +56,18 @@
             {
                 throw new FileNotFoundException(fullFilePath);
             }
-            _fullFilePath = fullFilePath;
+            Info = new FileInfo(fullFilePath);
+            Name = fullFilePath;
             RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
         }
     }
 
     public class MainViewModel : ViewModelBase, IProgress<Tuple<int, string>>
     {
+        private FileInfoViewModel? _selectedSourceFile;
+
+        public FileInfoViewModel? SelectedSourceFile { get => _selectedSourceFile; set { Set(nameof(SelectedSourceFile), ref _selectedSourceFile, value); } }
+
         private ObservableCollection<LogEntry> _logs = new ObservableCollection<LogEntry>();
 
         public ObservableCollection<LogEntry> Logs { get => _logs; internal set { Set(nameof(Logs), ref _logs, value); } }
@@ -115,6 +118,8 @@
 
         public RelayCommand Close { get; internal set; } = new RelayCommand(() => Application.Current.MainWindow.Close());
 
+        public RelayCommand OpenDestFolder { get; internal set; }
+
         public AsyncCommand Convert { get; internal set; }
 
         public RelayCommand PickSourceFiles { get; internal set; }
@@ -126,6 +131,12 @@
             IsBusy = true;
             Percentage = 0;
             LastProcessedFile = "";
+            if (SourceFiles.Any(x => File.Exists(x.Info.FullName)) == false)
+            {
+                System.Windows.MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
+                IsBusy = false;
+                return;
+            }
             try
             {
                 var tasks = new List<Task<bool>>();
@@ -134,7 +145,7 @@
                     FileInfoViewModel? sourcefile = SourceFiles[i];
                     if (File.Exists(sourcefile.Info.FullName))
                     {
-                        string subFolder = Path.Combine(Path.GetDirectoryName(sourcefile.Info.FullName) ?? "./", "QuickConverter");
+                        string subFolder = GetSubFolder(sourcefile);
                         string destFolder = DestFolder;
                         if (UseSourceFolderAsDest)
                         {
@@ -171,9 +182,14 @@
             }
         }
 
+        private static string GetSubFolder(FileInfoViewModel sourcefile)
+        {
+            return Path.Combine(Path.GetDirectoryName(sourcefile.Info.FullName) ?? "./", "QuickConverter");
+        }
+
         private void UpdateProgressAndLogs(int i, Task<bool> completedTask, FileInfoViewModel sourcefile, string destFile)
         {
-            var percentage = (i + 1) / SourceFiles.Count * 100;
+            var percentage = i / SourceFiles.Count * 100;
             Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
             UpdateLogs(completedTask, sourcefile, destFile);
         }
@@ -223,11 +239,37 @@
                     }
                 }
             }
-            FFMpegOptions.Configure(new FFMpegOptions { RootDirectory = Path.Combine(Assembly.GetExecutingAssembly().Location, "ffmpeg"), TempDirectory = Path.GetTempPath() });
+
+            string ffmpegFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "./", "ffmpeg");
+            FFMpegOptions.Configure(new FFMpegOptions { RootDirectory = ffmpegFolder, TempDirectory = Path.GetTempPath() });
             PickDestFolder = new RelayCommand(PickDestFolderMethod);
             PickSourceFiles = new RelayCommand(PickSourceFilesMethod);
             Convert = new AsyncCommand(ConvertMethodAsync);
             DeleteAllSourceFiles = new RelayCommand(DeleteAllSourceFilesMethod);
+            OpenDestFolder = new RelayCommand(OpenDestFolderExecute);
+        }
+
+        private void OpenDestFolderExecute()
+        {
+            var sourceFile = SelectedSourceFile is null ? DestFiles.FirstOrDefault() : SelectedSourceFile;
+            if (string.IsNullOrWhiteSpace(DestFolder) && !UseSourceFolderAsDest)
+            {
+                System.Windows.MessageBox.Show("Dossier non renseigné ou introuvable.");
+            }
+            else if (sourceFile != null)
+            {
+                var destFolder = GetSubFolder(sourceFile);
+                Directory.CreateDirectory(destFolder);
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = Path.GetDirectoryName(destFolder) ?? destFolder, UseShellExecute = true });
+            }
+            else if (Directory.Exists(DestFolder))
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = DestFolder, UseShellExecute = true });
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Dossier non renseigné ou introuvable.");
+            }
         }
 
         private void DeleteAllSourceFilesMethod()
@@ -241,6 +283,7 @@
             var ofd = new OpenFileDialog()
             {
                 Title = "Ajouter des fichiers source...",
+                Multiselect = true,
                 CheckFileExists = true,
                 DereferenceLinks = true,
                 InitialDirectory = SourceFiles.Any() ? Path.GetDirectoryName(SourceFiles.Last().Info.FullName) : Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
@@ -270,8 +313,9 @@
             fileInfoVm.ShortFileName = Path.GetFileName(fileInfoVm.Info.FullName);
             if (fileInfoVm.ShortFileName.Length > ShortFileNameCharLimit)
             {
-                var trimedName = fileInfoVm.ShortFileName.Trim().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
-                fileInfoVm.ShortFileName = $"{Path.GetFileNameWithoutExtension(trimedName).Substring(0, ShortFileNameCharLimit + Path.GetExtension(trimedName).Length)}{Path.GetExtension(trimedName)}";
+                var extension = Path.GetExtension(fileInfoVm.ShortFileName);
+                var trimedName = Path.GetFileNameWithoutExtension(fileInfoVm.ShortFileName).Trim().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
+                fileInfoVm.ShortFileName = $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}{extension}";
             }
             SourceFiles.Add(fileInfoVm);
             DestFiles.Add(fileInfoVm);

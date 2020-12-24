@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:local="clr-namespace:QuickConvert"
         xmlns:converters="clr-namespace:QuickConvert.Converters"
         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}"
         DataContext="{Binding Source={StaticResource Locator}, Path=Main}"
@@ -20,81 +21,119 @@
     </Window.Style>
     <Window.Resources>
         <converters:BooleanToInvertBooleanConverter x:Key="BooleanToInvertBooleanConverter" />
+        <converters:TaskStatusToFrenchConverter x:Key="TaskStatusToFrenchConverter" />
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0" HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Margin="5" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
-                <Grid>
+    <TabControl>
+        <TabItem Header="Convertisseur">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0">Fichier(s) à convertir</Label>
-                    <Button Grid.Column="1" Content="Ajouter..." Command="{Binding PickSourceFiles}" />
-                    <Button Grid.Column="2" Content="Tout supprimer" Command="{Binding DeleteAllSourceFiles}" />
-                </Grid>
-                <ListView ItemsSource="{Binding SourceFiles}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                                <TextBlock Text="{Binding Name}" />
-                                <Button Content="X" Command="{Binding RemoveSourceFile}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
-            <StackPanel Margin="5" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Stretch" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
-                <Label>Nom des fichiers en sortie</Label>
-                <ListView ItemsSource="{Binding DestFiles}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding ShortFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <Label>Limite de caractères (avec .EXT)</Label>
-                <TextBox Text="{Binding ShortFileNameCharLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-            <StackPanel Margin="5" Grid.Column="3" Orientation="Vertical" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
-                <Label>Format de sortie</Label>
-                <ComboBox ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
-                <Label>Bitrate (détermine la taille et la qualité)</Label>
-                <ComboBox ItemsSource="{Binding Bitrates}" SelectedItem="{Binding Bitrate}" />
-                <GroupBox>
-                    <GroupBox.Header>
-                        <Label Content="Dossier de destination" />
-                    </GroupBox.Header>
-                    <StackPanel Orientation="Vertical">
-                        <CheckBox IsChecked="{Binding UseSourceFolderAsDest}" Margin="5">
-                            <CheckBox.Content>
-                                <TextBlock TextWrapping="Wrap" ToolTip="Créé un sous-dossier QuickConvert dans le dossier source" Text="Utiliser le dossier source des fichiers" />
-                            </CheckBox.Content>
-                        </CheckBox>
-                        <TextBox IsEnabled="{Binding UseSourceFolderAsDest, Converter={StaticResource BooleanToInvertBooleanConverter}}" Text="{Binding DestFolder, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button IsEnabled="{Binding UseSourceFolderAsDest, Converter={StaticResource BooleanToInvertBooleanConverter}}" Content="Sélectionner..." Command="{Binding PickDestFolder}" Margin="5" />
+                    <StackPanel Margin="5" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0">Fichier(s) à convertir</Label>
+                            <Button Grid.Column="1" Content="Ajouter..." Command="{Binding PickSourceFiles}" />
+                            <Button Grid.Column="2" Content="Tout supprimer" Command="{Binding DeleteAllSourceFiles}" />
+                        </Grid>
+                        <ScrollViewer>
+                            <ListBox ItemsSource="{Binding SourceFiles}" SelectedItem="{Binding SelectedSourceFile, UpdateSourceTrigger=PropertyChanged}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:FileInfoViewModel}">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                            <Button Content="X" Command="{Binding RemoveSourceFile}" />
+                                            <TextBlock Text="{Binding Name}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
                     </StackPanel>
-                </GroupBox>
-            </StackPanel>
-        </Grid>
-        <StackPanel Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Stretch" IsEnabled="{Binding IsBusy}">
-            <TextBlock Text="{Binding LastProcessedFile}" />
-            <ProgressBar Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-            <Button IsDefault="True" Command="{Binding Convert}" Content="Commencer la conversion" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" Margin="5" />
-            <Button IsCancel="True" Content="Fermer" Command="{Binding Close}" Margin="5"  IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
-        </StackPanel>
-    </Grid>
+                    <StackPanel Margin="5" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Stretch" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
+                        <Label>Nom des fichiers en sortie</Label>
+                        <ScrollViewer>
+                            <ListBox ItemsSource="{Binding DestFiles}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:FileInfoViewModel}">
+                                        <TextBox Text="{Binding ShortFileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                        <Label>Limite de caractères (avec .EXT)</Label>
+                        <TextBox Text="{Binding ShortFileNameCharLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <StackPanel Margin="5" Grid.Column="3" Orientation="Vertical" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}">
+                        <Label>Format de sortie</Label>
+                        <ComboBox ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
+                        <Label>Bitrate (détermine la taille et la qualité)</Label>
+                        <ComboBox ItemsSource="{Binding Bitrates}" SelectedItem="{Binding Bitrate}" />
+                        <GroupBox>
+                            <GroupBox.Header>
+                                <Label Content="Dossier de destination" />
+                            </GroupBox.Header>
+                            <StackPanel Orientation="Vertical">
+                                <CheckBox IsChecked="{Binding UseSourceFolderAsDest}" Margin="5">
+                                    <CheckBox.Content>
+                                        <TextBlock TextWrapping="Wrap" ToolTip="Créé un sous-dossier QuickConvert dans le dossier source" Text="Utiliser le dossier source des fichiers" />
+                                    </CheckBox.Content>
+                                </CheckBox>
+                                <TextBox IsEnabled="{Binding UseSourceFolderAsDest, Converter={StaticResource BooleanToInvertBooleanConverter}}" Text="{Binding DestFolder, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button IsEnabled="{Binding UseSourceFolderAsDest, Converter={StaticResource BooleanToInvertBooleanConverter}}" Content="Sélectionner..." Command="{Binding PickDestFolder}" Margin="5" />
+                                <Button Content="Ouvrir le dossier" Command="{Binding OpenDestFolder}" Margin="5" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Stretch" IsEnabled="{Binding IsBusy}">
+                    <TextBlock>
+                        <Run Text="{Binding LastProcessedFile}" />
+                        <Run Text=" - Fait" />
+                    </TextBlock>
+                    <ProgressBar Minimum="0" Maximum="100" Margin="5" Value="{Binding Percentage}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
+                    <Button IsDefault="True" Command="{Binding Convert}" Content="Commencer la conversion" IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" Margin="5" />
+                    <Button IsCancel="True" Content="Fermer" Command="{Binding Close}" Margin="5"  IsEnabled="{Binding IsBusy, Converter={StaticResource BooleanToInvertBooleanConverter}}" />
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Journal">
+            <ScrollViewer>
+                <ListBox ItemsSource="{Binding Logs}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:LogEntry}">
+                            <Grid>
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="{Binding SourceFile}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>
+                                        <Run Text="Destination: " />
+                                        <Run Text="{Binding DestFile}" />
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Run Text="Conversion Réussie ? " />
+                                        <Run Text="{Binding TaskStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
 </Window>
