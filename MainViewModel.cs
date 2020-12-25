@@ -439,8 +439,8 @@
         {
             var extension = Path.GetExtension(fileInfoVm.ShortFileName);
             string trimedName = GetTrimedName(fileInfoVm);
-            int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName) == Path.GetFileNameWithoutExtension(trimedName));
-            while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName) == Path.GetFileNameWithoutExtension(trimedName)))
+            int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant());
+            while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant()))
             {
                 trimedName = GetTrimedName(fileInfoVm, offset++);
             }
