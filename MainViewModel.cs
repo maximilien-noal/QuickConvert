@@ -10,6 +10,7 @@
     using GalaSoft.MvvmLight.Ioc;
 
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
@@ -43,6 +44,7 @@
     {
         public FileInfo Info { get; }
 
+        private const string ConversionSubFolderName = "QuickConverterJob";
         private string _fullPath = "";
 
         public string FullPath { get => _fullPath; set { Set(nameof(FullPath), ref _fullPath, value); } }
@@ -60,7 +62,7 @@
 
         public string GetSubFolder()
         {
-            return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", "QuickConverterJob");
+            return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", ConversionSubFolderName);
         }
 
         public string DestFile => GetDestFile(SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.IndexOf(this));
@@ -116,6 +118,7 @@
 
     public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     {
+        private const string ConversionSubFolderName = "QuickConverterJob";
         private FileInfoViewModel? _selectedSourceFile;
 
         public FileInfoViewModel? SelectedSourceFile { get => _selectedSourceFile; set { Set(nameof(SelectedSourceFile), ref _selectedSourceFile, value); } }
@@ -289,6 +292,20 @@
             }
         }
 
+        private IEnumerable<string> EnumerateFilesRecursively(string folderPath)
+        {
+            if (Path.GetFileName(folderPath)?.ToUpperInvariant() == ConversionSubFolderName.ToUpperInvariant())
+            {
+                return new List<string>();
+            }
+            var files = new List<string>(Directory.EnumerateFiles(folderPath));
+            foreach (var dir in Directory.EnumerateDirectories(folderPath))
+            {
+                files.AddRange(EnumerateFilesRecursively(dir));
+            }
+            return files;
+        }
+
         public MainViewModel()
         {
             if (SimpleIoc.Default.IsRegistered<StartupEventArgs>())
@@ -297,14 +314,14 @@
                 {
                     if (Directory.Exists(fileOrFolder))
                     {
-                        foreach (var entry in Directory.EnumerateFiles(fileOrFolder))
+                        foreach (var entry in EnumerateFilesRecursively(fileOrFolder))
                         {
-                            AddFileToSourceAndDest(entry);
+                            AddFileToSourceAndDestIfExtensionIsValid(entry);
                         }
                     }
                     else if (File.Exists(fileOrFolder))
                     {
-                        AddFileToSourceAndDest(fileOrFolder);
+                        AddFileToSourceAndDestIfExtensionIsValid(fileOrFolder);
                     }
                 }
             }
@@ -331,14 +348,19 @@
             {
                 if (string.IsNullOrWhiteSpace(fbd.SelectedPath) == false && Directory.Exists(fbd.SelectedPath))
                 {
-                    foreach (var file in Directory.GetFiles(fbd.SelectedPath))
+                    foreach (var file in EnumerateFilesRecursively(fbd.SelectedPath))
                     {
-                        if (_extensions.Contains(Path.GetExtension(file)))
-                        {
-                            AddFileToSourceAndDest(file);
-                        }
+                        AddFileToSourceAndDestIfExtensionIsValid(file);
                     }
                 }
+            }
+        }
+
+        private void AddFileToSourceAndDestIfExtensionIsValid(string file)
+        {
+            if (_extensions.Contains(Path.GetExtension(file)))
+            {
+                AddFileToSourceAndDest(file);
             }
         }
 
