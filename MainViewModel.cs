@@ -118,6 +118,7 @@
 
     public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     {
+        private readonly string _appSettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{nameof(QuickConvert)}\\{nameof(QuickConvert)}.json");
         private const string ConversionSubFolderName = "QuickConverterJob";
         private FileInfoViewModel? _selectedSourceFile;
 
@@ -162,6 +163,7 @@
         public ObservableCollection<int> Bitrates { get => _bitrates; internal set { Set(nameof(Bitrates), ref _bitrates, value); } }
 
         private bool _isBusy = false;
+        private Prefs? _prefs;
 
         public bool IsBusy { get => _isBusy; set { Set(nameof(IsBusy), ref _isBusy, value); } }
 
@@ -334,6 +336,40 @@
             Convert = new AsyncCommand(ConvertMethodAsync);
             DeleteAllSourceFiles = new RelayCommand(DeleteAllSourceFilesMethod);
             OpenDestFolder = new RelayCommand(OpenDestFolderMethod);
+        }
+
+        public async Task LoadAppSettingsAsync()
+        {
+            IsBusy = true;
+            if (File.Exists(_appSettingsFilePath))
+            {
+                _prefs = await new ModelSerializer<Prefs>().DeserializeAsync<Prefs>(_appSettingsFilePath).ConfigureAwait(true);
+            }
+            else
+            {
+                _prefs = new Prefs();
+            }
+            UseSourceFolderAsDest = _prefs.UseSourceFolderAsDest;
+            ShortFileNameCharLimit = _prefs.ShortFileNameCharLimit;
+            IsBusy = false;
+        }
+
+        public async Task SaveAppSettingsAsync()
+        {
+            IsBusy = true;
+            var configDir = Path.GetDirectoryName(_appSettingsFilePath);
+            if (configDir != null)
+            {
+                Directory.CreateDirectory(configDir);
+            }
+            if (_prefs is null)
+            {
+                _prefs = new Prefs();
+            }
+            _prefs.UseSourceFolderAsDest = UseSourceFolderAsDest;
+            _prefs.ShortFileNameCharLimit = ShortFileNameCharLimit;
+            await new ModelSerializer<Prefs>().SerializeAsync(_appSettingsFilePath, _prefs).ConfigureAwait(true);
+            IsBusy = false;
         }
 
         private void PickSourceFolderMethod()

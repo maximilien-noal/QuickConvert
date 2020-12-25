@@ -15,7 +15,7 @@
         MinHeight="300"
         Icon="Assets/appicon.png"
         ResizeMode="CanResizeWithGrip"
-        WindowStartupLocation="CenterScreen" Closing="Window_Closing">
+        WindowStartupLocation="CenterScreen" Closing="Window_Closing" SourceInitialized="Window_SourceInitialized">
     <Window.Style>
         <Style BasedOn="{StaticResource {x:Type Window}}" TargetType="Window" />
     </Window.Style>

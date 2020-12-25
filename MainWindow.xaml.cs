@@ -10,15 +10,34 @@
             Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Threading.Thread.CurrentThread.CurrentUICulture.Name);
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+#pragma warning disable VSTHRD100 // Avoid async void methods (thsi is an event)
+
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (DataContext != null && DataContext is MainViewModel vm && vm.IsBusy)
+            if (DataContext is MainViewModel vm)
             {
-                if (MessageBox.Show("Conversion en cours. Fermer quand-même ?", "Conversion en cours", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                if (vm.IsBusy)
                 {
-                    e.Cancel = true;
+                    if (MessageBox.Show("Conversion en cours. Fermer quand-même ?", "Conversion en cours", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    {
+                        e.Cancel = true;
+                    }
+                }
+                else
+                {
+                    await vm.SaveAppSettingsAsync().ConfigureAwait(true);
                 }
             }
         }
+
+        private async void Window_SourceInitialized(object sender, System.EventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                await vm.LoadAppSettingsAsync().ConfigureAwait(true);
+            }
+        }
+
+#pragma warning restore VSTHRD100 // Avoid async void methods (thsi is an event)
     }
 }
