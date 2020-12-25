@@ -7,7 +7,7 @@
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Quick.ico</ApplicationIcon>
     <PublishReadyToRun>True</PublishReadyToRun>
-    <Version>0.1</Version>
+    <Version>0.2</Version>
     <AssemblyName>QuickConvert</AssemblyName>
     <Nullable>enable</Nullable>
     <PublishReadyToRun>True</PublishReadyToRun>

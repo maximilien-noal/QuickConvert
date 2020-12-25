@@ -19,6 +19,7 @@
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Forms;
+    using System.Windows.Interop;
 
     using Application = System.Windows.Application;
     using MessageBox = System.Windows.MessageBox;
@@ -200,8 +201,7 @@
         private async Task ConvertMethodAsync()
         {
             IsBusy = true;
-            Percentage = 0;
-            LastProcessedFile = "";
+            Report(Tuple.Create(0d, ""));
             if (SourceFiles.Any(x => File.Exists(x.Info.FullName)) == false)
             {
                 MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -524,6 +524,14 @@
             }
             Percentage = value.Item1;
             LastProcessedFile = Path.GetFileName(value.Item2);
+            if (Percentage == 0)
+            {
+                TaskbarProgress.SetState(new WindowInteropHelper(Application.Current.MainWindow).Handle, TaskbarProgress.TaskbarStates.Indeterminate);
+            }
+            else
+            {
+                TaskbarProgress.SetValue(new WindowInteropHelper(Application.Current.MainWindow).Handle, Percentage, 100);
+            }
         }
     }
 }
