@@ -24,6 +24,8 @@
 
     public class LogEntry : ObservableObject
     {
+        public DateTimeOffset Date => DateTimeOffset.Now;
+
         private TaskStatus _finalStatus;
 
         public TaskStatus FinalStatus { get => _finalStatus; internal set { Set(nameof(FinalStatus), ref _finalStatus, value); } }

@@ -168,13 +168,15 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Content="Fichier source : " />
-                            <TextBlock Grid.Row="1" Text="{Binding SourceFile}" />
-                            <Label Grid.Row="2" Content="Fichier de destination : " />
-                            <TextBlock Grid.Row="3" Text="{Binding DestFile}" />
-                            <Label Grid.Row="4" Content="Conversion Réussie : " />
-                            <TextBlock Grid.Row="5" Text="{Binding TaskStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
+                            <TextBlock Grid.Row="0" Text="{Binding Date, StringFormat=F}" />
+                            <Label Grid.Row="1" Content="Fichier source : " />
+                            <TextBlock Grid.Row="2" Text="{Binding SourceFile}" />
+                            <Label Grid.Row="3" Content="Fichier de destination : " />
+                            <TextBlock Grid.Row="4" Text="{Binding DestFile}" />
+                            <Label Grid.Row="5" Content="Conversion Réussie : " />
+                            <TextBlock Grid.Row="6" Text="{Binding FinalStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
