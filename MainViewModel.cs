@@ -92,7 +92,7 @@
             while (File.Exists(destFile))
             {
                 var fileAlone = Path.GetFileNameWithoutExtension(destFile);
-                var extension = Path.GetExtension(destFile);
+                var extension = ".MP3";
                 var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
                 Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
                 destFile = Path.Combine(GetDestFolder(), $"{fileAlone}_{date}_{extension}");
@@ -226,6 +226,10 @@
                             File.Delete(destFile);
                         }
                         destFile = sourcefile.GetDestFileNameForConversion(i);
+                        if (destFile.ToUpperInvariant().EndsWith(".mp3") == false)
+                        {
+                            destFile = $"{destFile}.mp3";
+                        }
                         var ffmpegProc = FFMpegArguments
                             .FromFileInput(sourcefile.Info.FullName)
                             .OutputToFile(destFile, false, options => options
@@ -473,7 +477,7 @@
 
         private string GetShortFileName(FileInfoViewModel fileInfoVm)
         {
-            var extension = Path.GetExtension(fileInfoVm.ShortFileName);
+            var extension = ".mp3";
             string trimedName = GetTrimedName(fileInfoVm);
             int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant());
             while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant()))
