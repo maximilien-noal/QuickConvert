@@ -47,11 +47,6 @@
 
         protected override void OnStartup(StartupEventArgs e)
         {
-#if RELEASE
-            var splash = new SplashScreen(System.Reflection.Assembly.GetExecutingAssembly(), "Assets/splashscreen.png");
-            splash.Show(true, true);
-#endif
-
             base.OnStartup(e);
             try
             {
