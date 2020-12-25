@@ -10,6 +10,8 @@
     <Version>0.1</Version>
     <AssemblyName>QuickConvert</AssemblyName>
     <Nullable>enable</Nullable>
+    <PublishReadyToRun>True</PublishReadyToRun>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <StartupObject>QuickConvert.App</StartupObject>
   </PropertyGroup>
@@ -42,4 +44,5 @@
 
   <ItemGroup>
     <Resource Include="Assets\appicon.png" />
-  </ItemGroup></Project>
+  </ItemGroup>
+</Project>
