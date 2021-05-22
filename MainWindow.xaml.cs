@@ -19,16 +19,13 @@
         {
             if (DataContext is MainViewModel vm)
             {
+                await vm.SaveAppSettingsAsync().ConfigureAwait(true);
                 if (vm.IsBusy)
                 {
                     if (MessageBox.Show("Conversion en cours. Fermer quand-même ?", "Conversion en cours", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                     {
                         e.Cancel = true;
                     }
-                }
-                else
-                {
-                    await vm.SaveAppSettingsAsync().ConfigureAwait(true);
                 }
             }
         }
