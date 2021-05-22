@@ -24,99 +24,6 @@
     using Application = System.Windows.Application;
     using MessageBox = System.Windows.MessageBox;
 
-    public class LogEntry : ObservableObject
-    {
-        public DateTimeOffset Date => DateTimeOffset.Now;
-
-        private TaskStatus _finalStatus;
-
-        public TaskStatus FinalStatus { get => _finalStatus; internal set { Set(nameof(FinalStatus), ref _finalStatus, value); } }
-
-        private string _sourceFile = "";
-
-        public string SourceFile { get => _sourceFile; internal set { Set(nameof(SourceFile), ref _sourceFile, value); } }
-
-        private string _destFile = "";
-
-        public string DestFile { get => _destFile; internal set { Set(nameof(DestFile), ref _destFile, value); } }
-    }
-
-    public class FileInfoViewModel : ViewModelBase
-    {
-        public FileInfo Info { get; }
-
-        private const string ConversionSubFolderName = "QuickConverterJob";
-        private string _fullPath = "";
-
-        public string FullPath { get => _fullPath; set { Set(nameof(FullPath), ref _fullPath, value); } }
-
-        private string _name = "";
-
-        public string Name { get => _name; set { Set(nameof(Name), ref _name, value); } }
-
-        private string _shortFileName = "";
-
-        public string ShortFileName { get => _shortFileName; set { Set(nameof(ShortFileName), ref _shortFileName, value); } }
-
-        public RelayCommand RemoveSourceFile { get; internal set; }
-        public RelayCommand PlaySourceFile { get; internal set; }
-
-        public string GetSubFolder()
-        {
-            return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", ConversionSubFolderName);
-        }
-
-        public string DestFile => GetDestFile(SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.IndexOf(this));
-
-        public string GetDestFile(int i)
-        {
-            string destFolder = GetDestFolder();
-            var destfileName = SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.ElementAt(i).ShortFileName;
-            var destFile = Path.Combine(destFolder, destfileName);
-            return destFile;
-        }
-
-        private string GetDestFolder()
-        {
-            string destFolder = SimpleIoc.Default.GetInstance<MainViewModel>().DestFolder;
-            if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest)
-            {
-                destFolder = GetSubFolder();
-            }
-
-            return destFolder;
-        }
-
-        public string GetDestFileNameForConversion(int i)
-        {
-            var destFile = GetDestFile(i);
-            while (File.Exists(destFile))
-            {
-                var fileAlone = Path.GetFileNameWithoutExtension(destFile);
-                var extension = ".MP3";
-                var date = DateTime.Now.ToLongTimeString().Replace(" ", "", StringComparison.InvariantCultureIgnoreCase);
-                Path.GetInvalidFileNameChars().ToList().ForEach(x => date = date.Replace($"{x}", "", StringComparison.InvariantCultureIgnoreCase));
-                destFile = Path.Combine(GetDestFolder(), $"{fileAlone}_{date}_{extension}");
-            }
-
-            return destFile;
-        }
-
-        public FileInfoViewModel(string fullFilePath)
-        {
-            if (string.IsNullOrWhiteSpace(fullFilePath) || File.Exists(fullFilePath) == false)
-            {
-                throw new FileNotFoundException(fullFilePath);
-            }
-            Info = new FileInfo(fullFilePath);
-            Name = Path.GetFileName(fullFilePath);
-            FullPath = fullFilePath;
-
-            RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
-            PlaySourceFile = new RelayCommand(() => Process.Start(new ProcessStartInfo(Info.FullName) { UseShellExecute = true }));
-        }
-    }
-
     public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     {
         private readonly string _appSettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), $"{nameof(QuickConvert)}\\{nameof(QuickConvert)}.json");
@@ -125,7 +32,7 @@
 
         public FileInfoViewModel? SelectedSourceFile { get => _selectedSourceFile; set { Set(nameof(SelectedSourceFile), ref _selectedSourceFile, value); } }
 
-        private ObservableCollection<LogEntry> _logs = new ObservableCollection<LogEntry>();
+        private ObservableCollection<LogEntry> _logs = new();
 
         public ObservableCollection<LogEntry> Logs
         {
@@ -151,7 +58,7 @@
 
         public string Format { get => _format; set { Set(nameof(Format), ref _format, value); } }
 
-        private ObservableCollection<string> _formats = new ObservableCollection<string>(new string[] { "MP3" });
+        private ObservableCollection<string> _formats = new(new string[] { "MP3" });
 
         public ObservableCollection<string> Formats { get => _formats; internal set { Set(nameof(Formats), ref _formats, value); } }
 
@@ -159,7 +66,7 @@
 
         public int Bitrate { get => _bitrate; set { Set(nameof(Bitrate), ref _bitrate, value); } }
 
-        private ObservableCollection<int> _bitrates = new ObservableCollection<int>(new int[] { 224, 256, 320 });
+        private ObservableCollection<int> _bitrates = new(new int[] { 224, 256, 320 });
 
         public ObservableCollection<int> Bitrates { get => _bitrates; internal set { Set(nameof(Bitrates), ref _bitrates, value); } }
 
@@ -172,11 +79,11 @@
 
         public string LastProcessedFile { get => _lastProcessedFile; set { Set(nameof(LastProcessedFile), ref _lastProcessedFile, value); } }
 
-        private ObservableCollection<FileInfoViewModel> _sourceFiles = new ObservableCollection<FileInfoViewModel>();
+        private ObservableCollection<FileInfoViewModel> _sourceFiles = new();
 
         public ObservableCollection<FileInfoViewModel> SourceFiles { get => _sourceFiles; internal set { Set(nameof(SourceFiles), ref _sourceFiles, value); } }
 
-        private ObservableCollection<FileInfoViewModel> _destFiles = new ObservableCollection<FileInfoViewModel>();
+        private ObservableCollection<FileInfoViewModel> _destFiles = new();
 
         public ObservableCollection<FileInfoViewModel> DestFiles { get => _destFiles; internal set { Set(nameof(DestFiles), ref _destFiles, value); } }
 
