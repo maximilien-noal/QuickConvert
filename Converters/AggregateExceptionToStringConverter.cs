@@ -1,5 +1,7 @@
 ﻿namespace QuickConvert.Converters
 {
+    using FFMpegCore.Exceptions;
+
     using System;
     using System.Globalization;
     using System.Windows.Data;
@@ -15,6 +17,10 @@
             if (value is AggregateException e)
             {
                 var exception = e.GetBaseException();
+                if (exception is FFMpegException ffe)
+                {
+                    return ffe.FfmpegErrorOutput;
+                }
                 return $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
             }
             return "Aucune.";
