@@ -39,7 +39,7 @@
             }
         }
 
-        private async Task LaunchConversionOnStartupAsync(MainViewModel vm)
+        private static async Task LaunchConversionOnStartupAsync(MainViewModel vm)
         {
             if (vm.DestFiles.Any() && Directory.Exists(vm.DestFolder))
             {
