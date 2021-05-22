@@ -116,50 +116,47 @@
             }
             try
             {
-                for (int i = 0; i < SourceFiles.Count; i++)
+                for (int i = 0; i < SourceFiles.Where(x => File.Exists(x.Info.FullName)).Count(); i++)
                 {
                     FileInfoViewModel? sourcefile = SourceFiles[i];
-                    if (File.Exists(sourcefile.Info.FullName))
+                    var subFolder = sourcefile.GetSubFolder();
+                    if (UseSourceFolderAsDest && Directory.Exists(subFolder) == false)
                     {
-                        var subFolder = sourcefile.GetSubFolder();
-                        if (UseSourceFolderAsDest && Directory.Exists(subFolder) == false)
-                        {
-                            Directory.CreateDirectory(subFolder);
-                        }
-                        var destFile = sourcefile.GetDestFile(i);
-                        if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
-                        {
-                            File.Delete(destFile);
-                        }
-                        destFile = sourcefile.GetDestFileNameForConversion(i);
-                        if (destFile.ToUpperInvariant().EndsWith(".mp3") == false)
-                        {
-                            destFile = $"{destFile}.mp3";
-                        }
-                        var ffmpegProc = FFMpegArguments
-                            .FromFileInput(sourcefile.Info.FullName)
-                            .OutputToFile(destFile, false, options => options
-                                .OverwriteExisting()
-                                .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k")
-                                .WithFastStart());
-                        var task = ffmpegProc.ProcessAsynchronously();
+                        Directory.CreateDirectory(subFolder);
+                    }
+                    var destFile = sourcefile.GetDestFile(i);
+                    if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
+                    {
+                        File.Delete(destFile);
+                    }
+                    destFile = sourcefile.GetDestFileNameForConversion(i);
+                    if (destFile.ToUpperInvariant().EndsWith(".mp3") == false)
+                    {
+                        destFile = $"{destFile}.mp3";
+                    }
+                    var ffmpegProc = FFMpegArguments
+                        .FromFileInput(sourcefile.Info.FullName)
+                        .OutputToFile(destFile, false, options => options
+                            .OverwriteExisting()
+                            .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k")
+                            .WithFastStart());
+                    var task = ffmpegProc.ProcessAsynchronously();
 
-                        var awaiter = task.GetAwaiter();
-                        awaiter.OnCompleted(() =>
-                        {
-                            UpdateProgress(i, sourcefile);
-                            UpdateLogs(task, sourcefile, destFile);
-                        });
-                        try
-                        {
-                            await task.ConfigureAwait(true);
-                        }
-                        catch (Exception e)
-                        {
-                            Serilog.Log.Error("Erreur conversion {Exception}:", e);
-                            Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
-                            UpdateLogs(task, sourcefile, destFile);
-                        }
+                    var awaiter = task.GetAwaiter();
+                    awaiter.OnCompleted(() =>
+                    {
+                        UpdateProgress(i, sourcefile);
+                        UpdateLogs(task, sourcefile, destFile);
+                    });
+                    try
+                    {
+                        await task.ConfigureAwait(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Serilog.Log.Error("Erreur conversion {Exception}:", e);
+                        Serilog.Log.Error("Erreur conversion {BaseException}:", e.GetBaseException());
+                        UpdateLogs(task, sourcefile, destFile);
                     }
                 }
             }
