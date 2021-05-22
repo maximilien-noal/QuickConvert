@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v5.0": {},
     ".NETCoreApp,Version=v5.0/win-x64": {
-      "QuickConvert/0.3": {
+      "QuickConvert/0.4": {
         "dependencies": {
           "AdonisUI": "1.16.0",
           "AdonisUI.ClassicTheme": "1.16.0",
@@ -16,6 +16,7 @@
           "FFmpeg.Win64.Static": "4.1.1.1",
           "Microsoft.VisualStudio.Threading.Analyzers": "16.8.55",
           "MvvmLightStd10": "5.4.1.2",
+          "OSVersionHelper": "1.1.24",
           "Serilog": "2.10.0",
           "Serilog.Sinks.Async": "1.4.0",
           "Serilog.Sinks.File": "4.1.0",
@@ -1173,6 +1174,14 @@
           "MvvmLightLibsStd10": "5.4.1.1"
         }
       },
+      "OSVersionHelper/1.1.24": {
+        "runtime": {
+          "lib/netstandard2.0/OSVersionHelper.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.24.14709"
+          }
+        }
+      },
       "runtime.any.System.Collections/4.0.11": {
         "dependencies": {
           "System.Runtime": "4.1.0"
@@ -1440,7 +1449,7 @@
     }
   },
   "libraries": {
-    "QuickConvert/0.3": {
+    "QuickConvert/0.4": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1552,6 +1561,13 @@
       "sha512": "sha512-+stcp1MI0UYAmVzaw32HqWFatxV8y5rQEHPsb6NZMMHBhnYeq/vKYR/eyt3Fuwia0vHuU2NbMU7rPzpVg993fQ==",
       "path": "mvvmlightstd10/5.4.1.2",
       "hashPath": "mvvmlightstd10.5.4.1.2.nupkg.sha512"
+    },
+    "OSVersionHelper/1.1.24": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yl/E/DY/l0GDoCWhKVj4b10vxCnG3fYpdI5wAY/3UpgkukJOcIV/eA+CS+BR1yHL/1JjNTXqB5Q/jXBC9netXw==",
+      "path": "osversionhelper/1.1.24",
+      "hashPath": "osversionhelper.1.1.24.nupkg.sha512"
     },
     "runtime.any.System.Collections/4.0.11": {
       "type": "package",
