@@ -50,7 +50,7 @@
             base.OnStartup(e);
             try
             {
-                if (OSVersionHelper.WindowsVersionHelper.Windows10Release >= OSVersionHelper.Windows10Release.May2019)
+                if (AreWuindowsThemesSupported())
                 {
                     WatchTheme();
                     ChangeThemeIfWindowsChangedIt();
@@ -61,6 +61,19 @@
                 //Not a version of Windows 10 that supports themes, despite checking for it.
                 //Not worth crashing for. Not worth logging for.
             }
+        }
+
+        private static bool AreWuindowsThemesSupported()
+        {
+            try
+            {
+                return OSVersionHelper.WindowsVersionHelper.IsWindows10May2019OrGreater;
+            }
+            catch
+            {
+                //OSVersionHelper crashed on a Windows Insider Build.
+            }
+            return true;
         }
 
         private static void ChangeTheme(Uri theme)

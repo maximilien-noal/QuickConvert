@@ -1,5 +1,8 @@
 ﻿namespace QuickConvert
 {
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
 
     public partial class MainWindow : Window
@@ -35,9 +38,18 @@
             if (DataContext is MainViewModel vm)
             {
                 await vm.LoadAppSettingsAsync().ConfigureAwait(true);
+                await LaunchConversionOnStartupAsync(vm).ConfigureAwait(true);
             }
         }
 
-#pragma warning restore VSTHRD100 // Avoid async void methods (thsi is an event)
+        private async Task LaunchConversionOnStartupAsync(MainViewModel vm)
+        {
+            if (vm.DestFiles.Any() && Directory.Exists(vm.DestFolder))
+            {
+                await vm.Convert.ExecuteAsync().ConfigureAwait(true);
+            }
+        }
+
+#pragma warning restore VSTHRD100 // Avoid async void methods (this is an event)
     }
 }
