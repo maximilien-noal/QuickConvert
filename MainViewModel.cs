@@ -138,7 +138,7 @@
                         .FromFileInput(sourcefile.Info.FullName)
                         .OutputToFile(destFile, false, options => options
                             .OverwriteExisting()
-                            .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k")
+                            .WithCustomArgument($"-c:a libmp3lame -b:a {Bitrate}k")
                             .WithFastStart());
                     var task = ffmpegProc.ProcessAsynchronously();
 
