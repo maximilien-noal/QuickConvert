@@ -172,6 +172,7 @@
             finally
             {
                 IsBusy = false;
+                TaskbarProgress.SetState(new WindowInteropHelper(Application.Current.MainWindow).Handle, TaskbarProgress.TaskbarStates.Indeterminate);
             }
         }
 
