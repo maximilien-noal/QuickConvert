@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "QuickConvert": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Musique\\O.S.T.s\\Jeux\\Dune\\08 Dune Theme.flac\""
+    }
+  }
+}

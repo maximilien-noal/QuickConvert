@@ -130,7 +130,7 @@
                         File.Delete(destFile);
                     }
                     destFile = sourcefile.GetDestFileNameForConversion(i);
-                    if (destFile.ToUpperInvariant().EndsWith(".mp3") == false)
+                    if (destFile.ToUpperInvariant().EndsWith(".MP3") == false)
                     {
                         destFile = $"{destFile}.mp3";
                     }
