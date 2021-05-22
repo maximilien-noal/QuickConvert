@@ -109,7 +109,7 @@
         {
             IsBusy = true;
             Report(Tuple.Create(0d, ""));
-            if (SourceFiles.Any(x => File.Exists(x.Info.FullName)) == false)
+            if (SourceFiles.All(x => File.Exists(x.Info.FullName)) == false)
             {
                 MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
                 IsBusy = false;
