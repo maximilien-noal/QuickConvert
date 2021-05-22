@@ -238,7 +238,14 @@
                     }
                 }
             }
-
+            if (SourceFiles.Any() && SourceFiles.All(x => Path.GetDirectoryName(x.Info.FullName) == Path.GetDirectoryName(SourceFiles.First().Info.FullName)))
+            {
+                var destFolder = Path.GetDirectoryName(SourceFiles.First().Info.FullName);
+                if (string.IsNullOrWhiteSpace(destFolder) == false && Directory.Exists(destFolder))
+                {
+                    DestFolder = destFolder;
+                }
+            }
             string ffmpegFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "./", "ffmpeg");
             FFMpegOptions.Configure(new FFMpegOptions { RootDirectory = ffmpegFolder, TempDirectory = Path.GetTempPath() });
             PickDestFolder = new RelayCommand(PickDestFolderMethod);
