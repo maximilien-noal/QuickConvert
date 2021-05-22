@@ -17,7 +17,7 @@
                 var exception = e.GetBaseException();
                 return $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
             }
-            return "";
+            return "Aucune.";
         }
 
         public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
