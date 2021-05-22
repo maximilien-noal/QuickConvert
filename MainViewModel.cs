@@ -319,7 +319,7 @@
             var sourceFile = SelectedSourceFile is null ? DestFiles.FirstOrDefault() : SelectedSourceFile;
             if (string.IsNullOrWhiteSpace(DestFolder) && !UseSourceFolderAsDest)
             {
-                MessageBox.Show("Dossier non renseigné ou introuvable.");
+                MessageBox.Show($"Dossier non renseigné ou introuvable :{Environment.NewLine}{DestFolder}");
             }
             else if (sourceFile != null)
             {
