@@ -65,7 +65,7 @@
 
         public int Bitrate { get => _bitrate; set { Set(nameof(Bitrate), ref _bitrate, value); } }
 
-        private ObservableCollection<int> _bitrates = new(new int[] { 224, 256, 320 });
+        private ObservableCollection<int> _bitrates = new(new int[] { 192, 224, 256, 320 });
 
         public ObservableCollection<int> Bitrates { get => _bitrates; internal set { Set(nameof(Bitrates), ref _bitrates, value); } }
 
@@ -140,7 +140,7 @@
                             .FromFileInput(sourcefile.Info.FullName)
                             .OutputToFile(destFile, false, options => options
                                 .OverwriteExisting()
-                                .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k --preset insane")
+                                .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k")
                                 .WithFastStart());
                         var task = ffmpegProc.ProcessAsynchronously();
 
