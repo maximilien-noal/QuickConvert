@@ -32,7 +32,7 @@
             var logFilePath = Path.Combine(
                                 Environment.GetFolderPath(
                                     Environment.SpecialFolder.ApplicationData),
-                                    $"{nameof(QuickConvert)}\\Main.LOG");
+                                    Path.Combine(nameof(QuickConvert), "Main.LOG"));
 
             _logger = new LoggerConfiguration()
                 .WriteTo.Async(config => config.File(logFilePath)).CreateLogger();
@@ -51,7 +51,7 @@
             try
             {
                 WatchTheme();
-                CHangeThemeIfWindowsChangedIt();
+                ChangeThemeIfWindowsChangedIt();
             }
             catch
             {
@@ -85,7 +85,7 @@
             return registryValue > 0 ? ResourceLocator.LightColorScheme : ResourceLocator.DarkColorScheme;
         }
 
-        private void CHangeThemeIfWindowsChangedIt()
+        private void ChangeThemeIfWindowsChangedIt()
         {
             var newWindowsTheme = GetWindowsTheme();
             if (_currentTheme != newWindowsTheme)
@@ -98,14 +98,11 @@
         private void OnWpfUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             _logger.Error(e.Exception.GetBaseException(), "An unhandled exception occured");
-            MessageBox.Show(e.Exception.GetBaseException().GetType().ToString() + Environment.NewLine + e.Exception.GetBaseException().Message, "Une erreur est survenue. Opération annulée.");
+            MessageBox.Show($"{e.Exception.GetBaseException().GetType()}{Environment.NewLine}{e.Exception.GetBaseException().Message}", "Une erreur est survenue. Opération annulée.");
             e.Handled = true;
         }
 
-        private void Watcher_EventArrived(object sender, EventArrivedEventArgs e)
-        {
-            CHangeThemeIfWindowsChangedIt();
-        }
+        private void Watcher_EventArrived(object sender, EventArrivedEventArgs e) => ChangeThemeIfWindowsChangedIt();
 
         private void WatchTheme()
         {
@@ -224,9 +221,6 @@
             }
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            SimpleIoc.Default.Register(() => e);
-        }
+        private void Application_Startup(object sender, StartupEventArgs e) => SimpleIoc.Default.Register(() => e);
     }
 }

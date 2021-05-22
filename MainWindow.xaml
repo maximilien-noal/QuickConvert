@@ -22,6 +22,7 @@
     <Window.Resources>
         <converters:BooleanToInvertBooleanConverter x:Key="BooleanToInvertBooleanConverter" />
         <converters:TaskStatusToFrenchConverter x:Key="TaskStatusToFrenchConverter" />
+        <converters:AggregateExceptionToStringConverter x:Key="AggregateExceptionToStringConverter" />
         <converters:BooleanToInvertVisibilityConverter x:Key="BooleanToInvertVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
@@ -157,7 +158,7 @@
             </Grid>
         </TabItem>
         <TabItem Header="Journal">
-            <ListBox ItemsSource="{Binding Logs}">
+            <ListBox ItemsSource="{Binding Logs, Mode=OneWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type local:LogEntry}">
                         <Grid>
@@ -169,14 +170,18 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Text="{Binding Date, StringFormat=F}" />
+                            <TextBlock Grid.Row="0" Text="{Binding Date, Mode=OneWay, StringFormat=F}" />
                             <Label Grid.Row="1" Content="Fichier source : " />
-                            <TextBlock Grid.Row="2" Text="{Binding SourceFile}" />
+                            <TextBlock Grid.Row="2" Text="{Binding SourceFile, Mode=OneWay}" />
                             <Label Grid.Row="3" Content="Fichier de destination : " />
-                            <TextBlock Grid.Row="4" Text="{Binding DestFile}" />
+                            <TextBlock Grid.Row="4" Text="{Binding DestFile, Mode=OneWay}" />
                             <Label Grid.Row="5" Content="Conversion Réussie : " />
-                            <TextBlock Grid.Row="6" Text="{Binding FinalStatus, Converter={StaticResource TaskStatusToFrenchConverter}}" />
+                            <TextBlock Grid.Row="6" Text="{Binding FinalStatus, Mode=OneWay, Converter={StaticResource TaskStatusToFrenchConverter}}" />
+                            <Label Grid.Row="6" Content="Erreur : " />
+                            <TextBlock Grid.Row="6" Text="{Binding Error, Mode=OneWay, Converter={StaticResource AggregateExceptionToStringConverter}}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

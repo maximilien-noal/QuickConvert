@@ -3,7 +3,6 @@
     using AsyncAwaitBestPractices.MVVM;
 
     using FFMpegCore;
-    using FFMpegCore.Enums;
 
     using GalaSoft.MvvmLight;
     using GalaSoft.MvvmLight.Command;
@@ -146,7 +145,11 @@
                         var task = ffmpegProc.ProcessAsynchronously();
 
                         var awaiter = task.GetAwaiter();
-                        awaiter.OnCompleted(() => UpdateProgressAndLogs(i, task, sourcefile, destFile));
+                        awaiter.OnCompleted(() =>
+                        {
+                            UpdateProgress(i, sourcefile);
+                            UpdateLogs(task, sourcefile, destFile);
+                        });
                         try
                         {
                             await task.ConfigureAwait(true);
@@ -172,11 +175,10 @@
             }
         }
 
-        private void UpdateProgressAndLogs(int i, Task<bool> completedTask, FileInfoViewModel sourcefile, string destFile)
+        private void UpdateProgress(int i, FileInfoViewModel sourcefile)
         {
             var percentage = (double)i / SourceFiles.Count * 100;
             Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
-            UpdateLogs(completedTask, sourcefile, destFile);
         }
 
         private void UpdateLogs(Task<bool> completedTask, FileInfoViewModel sourcefile, string destfile)
@@ -185,7 +187,7 @@
             {
                 return;
             }
-            Logs.Add(new LogEntry() { FinalStatus = completedTask.Status, SourceFile = sourcefile.Info.FullName, DestFile = destfile });
+            Logs.Add(new LogEntry() { FinalStatus = completedTask.Status, SourceFile = sourcefile.Info.FullName, DestFile = destfile, Error = completedTask.Exception });
         }
 
         public RelayCommand PickDestFolder { get; internal set; }

@@ -9,7 +9,7 @@
     public sealed class TaskStatusToFrenchConverter : IValueConverter
     {
         /// <summary> Gets the default instance </summary>
-        public static readonly TaskStatusToFrenchConverter Default = new TaskStatusToFrenchConverter();
+        public static readonly TaskStatusToFrenchConverter Default = new();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

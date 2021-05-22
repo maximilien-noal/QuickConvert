@@ -8,7 +8,7 @@
     [ValueConversion(typeof(bool), typeof(Visibility))]
     public sealed class BooleanToInvertVisibilityConverter : IValueConverter
     {
-        public static readonly BooleanToInvertVisibilityConverter Default = new BooleanToInvertVisibilityConverter();
+        public static readonly BooleanToInvertVisibilityConverter Default = new();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

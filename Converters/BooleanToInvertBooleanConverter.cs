@@ -8,11 +8,11 @@
     public sealed class BooleanToInvertBooleanConverter : IValueConverter
     {
         /// <summary> Gets the default instance </summary>
-        public static readonly BooleanToInvertBooleanConverter Default = new BooleanToInvertBooleanConverter();
+        public static readonly BooleanToInvertBooleanConverter Default = new();
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is bool boolean)
+            if (value is bool boolean)
             {
                 return !boolean;
             }
@@ -21,7 +21,7 @@
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is bool boolean)
+            if (value is bool boolean)
             {
                 return boolean;
             }

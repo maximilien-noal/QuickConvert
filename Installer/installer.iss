@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{1AAA3319-FDD8-49D9-828E-BB33378E67F3}
 AppName=Quick Converter
-AppVersion=0.2
+AppVersion=0.4
 AppPublisher=Maximilien Noal
 AppPublisherURL=https://github.com/maximilien-noal
 DefaultDirName={pf64}\Quick Converter
@@ -27,7 +27,7 @@ Name: "{commondesktop}\Quick Converter"; Filename: "{app}\QuickConvert.exe";
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Quick Converter"; Filename: "{app}\QuickConvert.exe";
 
 [Run]
-Filename: "{tmp}\windowsdesktop-runtime-5.0.1-win-x64.exe"; Parameters: "/install /quiet /norestart"; WorkingDir: "{tmp}"; Flags: runhidden waituntilterminated; StatusMsg: "Installation du runtime .NET Core 5 (Windows Desktop)...";
+Filename: "{tmp}\windowsdesktop-runtime-5.0.6-win-x64.exe"; Parameters: "/install /quiet /norestart"; WorkingDir: "{tmp}"; Flags: runhidden waituntilterminated; StatusMsg: "Installation du runtime .NET Core 5 (Windows Desktop)...";
 Filename: "{app}\QuickConvert.exe"; Flags: shellexec postinstall skipifsilent; Description: "{cm:LaunchProgram,Quick Converter}"
 
 [Languages]
@@ -41,7 +41,7 @@ Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription
 Source: "Quick.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "RelPub\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "windowsdesktop-runtime-5.0.1-win-x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion
+Source: "windowsdesktop-runtime-5.0.6-win-x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 
 [Registry]
 ; Imported Registry File: "C:\Users\noalm\source\repos\QuickConvert\Installer\Folders.reg"
