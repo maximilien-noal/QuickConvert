@@ -138,10 +138,7 @@
             /// The resource dictionary containing AdonisUI's resources. Expected are the resource
             /// dictionaries of the app or window.
             /// </param>
-            public static void AddAdonisResources(ResourceDictionary rootResourceDictionary)
-            {
-                rootResourceDictionary.MergedDictionaries.Add(new ResourceDictionary { Source = ClassicTheme });
-            }
+            public static void AddAdonisResources(ResourceDictionary rootResourceDictionary) => rootResourceDictionary.MergedDictionaries.Add(new ResourceDictionary { Source = ClassicTheme });
 
             /// <summary>
             /// Removes all resources of AdonisUI from the provided resource dictionary.
