@@ -140,8 +140,8 @@
                         var ffmpegProc = FFMpegArguments
                             .FromFileInput(sourcefile.Info.FullName)
                             .OutputToFile(destFile, false, options => options
-                                .WithAudioCodec(AudioCodec.LibMp3Lame)
-                                .WithAudioBitrate(Bitrate)
+                                .OverwriteExisting()
+                                .WithCustomArgument($"-c:a libmp3lame, -q:a {Bitrate}k --preset insane")
                                 .WithFastStart());
                         var task = ffmpegProc.ProcessAsynchronously();
 
