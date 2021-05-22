@@ -180,8 +180,8 @@
                             <TextBlock Grid.Row="4" Text="{Binding DestFile, Mode=OneWay}" />
                             <Label Grid.Row="5" Content="Conversion Réussie : " />
                             <TextBlock Grid.Row="6" Text="{Binding FinalStatus, Mode=OneWay, Converter={StaticResource TaskStatusToFrenchConverter}}" />
-                            <Label Grid.Row="6" Content="Erreur : " />
-                            <TextBlock Grid.Row="6" Text="{Binding Error, Mode=OneWay, Converter={StaticResource AggregateExceptionToStringConverter}}" />
+                            <Label Grid.Row="7" Content="Erreur : " />
+                            <TextBlock Grid.Row="8" Text="{Binding Error, Mode=OneWay, Converter={StaticResource AggregateExceptionToStringConverter}}" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
