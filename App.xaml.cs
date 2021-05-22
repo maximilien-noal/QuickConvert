@@ -50,12 +50,16 @@
             base.OnStartup(e);
             try
             {
-                WatchTheme();
-                ChangeThemeIfWindowsChangedIt();
+                if (OSVersionHelper.WindowsVersionHelper.Windows10Release >= OSVersionHelper.Windows10Release.May2019)
+                {
+                    WatchTheme();
+                    ChangeThemeIfWindowsChangedIt();
+                }
             }
             catch
             {
-                //No OS support for themes. Not worth crashing for.
+                //Not a version of Windows 10 that supports themes, despite checking for it.
+                //Not worth crashing for. Not worth logging for.
             }
         }
 

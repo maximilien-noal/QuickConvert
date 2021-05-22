@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="OSVersionHelper" Version="1.1.24" />
     <PackageReference Include="FFMpegCore" Version="3.3.0" />
     <PackageReference Include="FFmpeg.Win64.Static" Version="4.1.1.1" />
     <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="5.0.2" />
