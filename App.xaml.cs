@@ -60,7 +60,9 @@
             {
                 //Not a version of Windows 10 that supports themes, despite checking for it.
                 //Not worth crashing for. Not worth logging for.
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
             }
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
         }
 
         private static bool AreWuindowsThemesSupported()
@@ -72,7 +74,9 @@
             catch
             {
                 //OSVersionHelper crashed on a Windows Insider Build.
+#pragma warning disable ERP022 // Unobserved exception in generic exception handler
             }
+#pragma warning restore ERP022 // Unobserved exception in generic exception handler
             return true;
         }
 

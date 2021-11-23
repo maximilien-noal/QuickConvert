@@ -19,7 +19,7 @@
                 var exception = e.GetBaseException();
                 if (exception is FFMpegException ffe)
                 {
-                    return ffe.FfmpegErrorOutput;
+                    return ffe.FFMpegErrorOutput;
                 }
                 return $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
             }

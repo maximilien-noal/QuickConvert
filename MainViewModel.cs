@@ -247,7 +247,7 @@
                 }
             }
             string ffmpegFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "./", "ffmpeg");
-            FFMpegOptions.Configure(new FFMpegOptions { RootDirectory = ffmpegFolder, TempDirectory = Path.GetTempPath() });
+            FFMpegCore.GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = ffmpegFolder, TemporaryFilesFolder = Path.GetTempPath() });
             PickDestFolder = new RelayCommand(PickDestFolderMethod);
             PickSourceFiles = new RelayCommand(PickSourceFilesMethod);
             PickSourceFolder = new RelayCommand(PickSourceFolderMethod);
