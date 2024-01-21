@@ -52,5 +52,16 @@ public partial class MainWindow : Window
         }
     }
 
+    private void Window_Drop(object sender, DragEventArgs e)
+    {
+        if(e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.AddStartupDestFileOrFolder((string[])e.Data.GetData(DataFormats.FileDrop));
+            }
+        }
+    }
+
 #pragma warning restore VSTHRD100 // Avoid async void methods (this is an event)
 }
