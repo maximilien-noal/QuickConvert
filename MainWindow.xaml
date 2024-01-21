@@ -233,6 +233,7 @@
                         Minimum="0"
                         Value="{Binding Percentage}" />
                     <TextBlock HorizontalAlignment="Center" Text="{Binding TextProgress}" />
+                    <Button Command="{Binding CancelEntireConversion}" Content="Annuler tout" />
                 </StackPanel>
                 <StackPanel
                     Grid.Row="2"

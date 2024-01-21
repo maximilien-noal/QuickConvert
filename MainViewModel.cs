@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -103,7 +104,20 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     public RelayCommand DeleteAllSourceFiles { get; internal set; }
 
-    public string TextProgress { get; internal set; } = "Prêt";
+    public RelayCommand CancelEntireConversion {  get; internal set; }
+
+    private void CancelConversion()
+    {
+        if(MessageBox.Show("Voulez-vous vraiment annuler la conversion en cours ?", "Annuler la conversion", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = new CancellationTokenSource();
+            IsBusy = false;
+        }
+    }
+
+    private string TextProgress = "Prêt";
 
 
     private readonly string[] _extensions = new string[] { "*.mov", "*.webm","*.m4a", ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
@@ -123,6 +137,12 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
         {
             for (int i = 0; i < SourceFiles.Where(x => File.Exists(x.Info.FullName)).Count(); i++)
             {
+                // Check if cancellation is requested
+                if (_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    break; // Break the loop and stop the conversion process
+                }
+
                 FileInfoViewModel? sourcefile = SourceFiles[i];
                 var subFolder = sourcefile.GetSubFolder();
                 if (UseSourceFolderAsDest && Directory.Exists(subFolder) == false)
@@ -145,7 +165,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
                         .OverwriteExisting()
                         .WithCustomArgument($"-c:a libmp3lame -b:a {Bitrate}k")
                         .WithFastStart());
-                var task = ffmpegProc.ProcessAsynchronously();
+                var task = Task.Run(() => ffmpegProc.ProcessAsynchronously(), _cancellationTokenSource.Token);
 
                 var awaiter = task.GetAwaiter();
                 awaiter.OnCompleted(() =>
@@ -228,6 +248,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     public MainViewModel()
     {
+        CancelEntireConversion = new RelayCommand(CancelConversion);
         if (SimpleIoc.Default.IsRegistered<StartupEventArgs>())
         {
             foreach (var fileOrFolder in SimpleIoc.Default.GetInstance<StartupEventArgs>().Args)
@@ -438,6 +459,8 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     }
 
     private double _percentage;
+
+    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
     public double Percentage { get => _percentage; set { Set(nameof(Percentage), ref _percentage, value); } }
 
