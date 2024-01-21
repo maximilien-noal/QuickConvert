@@ -130,7 +130,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
                     Directory.CreateDirectory(subFolder);
                 }
                 var destFile = sourcefile.GetDestFile(i);
-                if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
+                if (UseSourceFolderAsDest && File.Exists(destFile) && sourcefile.Info.FullName != destFile)
                 {
                     File.Delete(destFile);
                 }
