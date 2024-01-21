@@ -1,8 +1,7 @@
-﻿namespace QuickConvert
+﻿namespace QuickConvert;
+
+public record Prefs
 {
-    public record Prefs
-    {
-        public bool UseSourceFolderAsDest { get; set; } = true;
-        public int ShortFileNameCharLimit { get; set; } = 15;
-    }
+    public bool UseSourceFolderAsDest { get; set; } = true;
+    public int ShortFileNameCharLimit { get; set; } = 15;
 }

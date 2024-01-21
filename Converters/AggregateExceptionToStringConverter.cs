@@ -1,31 +1,30 @@
-﻿namespace QuickConvert.Converters
+﻿namespace QuickConvert.Converters;
+
+using FFMpegCore.Exceptions;
+
+using System;
+using System.Globalization;
+using System.Windows.Data;
+
+[ValueConversion(typeof(AggregateException), typeof(string))]
+public sealed class AggregateExceptionToStringConverter : IValueConverter
 {
-    using FFMpegCore.Exceptions;
+    /// <summary> Gets the default instance </summary>
+    public static readonly AggregateExceptionToStringConverter Default = new();
 
-    using System;
-    using System.Globalization;
-    using System.Windows.Data;
-
-    [ValueConversion(typeof(AggregateException), typeof(string))]
-    public sealed class AggregateExceptionToStringConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        /// <summary> Gets the default instance </summary>
-        public static readonly AggregateExceptionToStringConverter Default = new();
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        if (value is AggregateException e)
         {
-            if (value is AggregateException e)
+            var exception = e.GetBaseException();
+            if (exception is FFMpegException ffe)
             {
-                var exception = e.GetBaseException();
-                if (exception is FFMpegException ffe)
-                {
-                    return ffe.FFMpegErrorOutput;
-                }
-                return $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
+                return ffe.FFMpegErrorOutput;
             }
-            return "Aucune.";
+            return $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
         }
-
-        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
+        return "Aucune.";
     }
+
+    public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
 }
