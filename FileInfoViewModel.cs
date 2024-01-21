@@ -34,12 +34,22 @@ public class FileInfoViewModel : ViewModelBase
         return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", ConversionSubFolderName);
     }
 
-    public string DestFile => GetDestFile(_mainWindowViewModel.DestFiles.IndexOf(this));
+    public string DestFile
+    {
+        get
+        {
+            return GetDestFile(_mainWindowViewModel.DestFiles.IndexOf(this));
+        }
+    }
 
     public string GetDestFile(int i)
     {
         string destFolder = GetDestFolder();
-        var destfileName = _mainWindowViewModel.DestFiles.ElementAt(i).ShortFileName;
+        var destfileName = _mainWindowViewModel.DestFiles.ElementAtOrDefault(i)?.ShortFileName;
+        if(string.IsNullOrWhiteSpace(destfileName))
+        {
+            destfileName = Path.GetFileNameWithoutExtension(Info.FullName) + ".MP3";
+        }
         var destFile = Path.Combine(destFolder, destfileName);
         return destFile;
     }
