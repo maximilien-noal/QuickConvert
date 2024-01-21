@@ -8,6 +8,8 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 
+using Microsoft.Win32;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +19,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Interop;
 
 using Application = System.Windows.Application;
@@ -198,16 +199,16 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     private void PickDestFolderMethod()
     {
-        var fbd = new FolderBrowserDialog
+        var fbd = new OpenFolderDialog()
         {
-            ShowNewFolderButton = true,
-            UseDescriptionForTitle = true,
-            Description = "Dossier de destination...",
-            RootFolder = Environment.SpecialFolder.MyMusic
+            ShowHiddenItems = false,
+            Multiselect = false,
+            Title = "Dossier de destination...",
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
         };
-        if (fbd.ShowDialog() == DialogResult.OK)
+        if (fbd.ShowDialog() == true)
         {
-            DestFolder = fbd.SelectedPath;
+            DestFolder = fbd.FolderName;
         }
     }
 
@@ -298,17 +299,16 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     private void PickSourceFolderMethod()
     {
-        var fbd = new FolderBrowserDialog()
+        var fbd = new OpenFolderDialog()
         {
-            Description = "Ajouter des fichiers source...",
-            UseDescriptionForTitle = true,
-            RootFolder = Environment.SpecialFolder.MyMusic
+            Title = "Ajouter des fichiers source...",
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
         };
-        if (fbd.ShowDialog() == DialogResult.OK)
+        if (fbd.ShowDialog() == true)
         {
-            if (string.IsNullOrWhiteSpace(fbd.SelectedPath) == false && Directory.Exists(fbd.SelectedPath))
+            if (string.IsNullOrWhiteSpace(fbd.FolderName) == false && Directory.Exists(fbd.FolderName))
             {
-                foreach (var file in EnumerateFilesRecursively(fbd.SelectedPath))
+                foreach (var file in EnumerateFilesRecursively(fbd.FolderName))
                 {
                     AddFileToSourceAndDestIfExtensionIsValid(file);
                 }
@@ -361,10 +361,10 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
             Multiselect = true,
             CheckFileExists = true,
             DereferenceLinks = true,
-            Filter = "Fichier audio ou vidéo (*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg)|*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg|Tous les types de fichiers (*.*)|*.*",
+            Filter = "Fichier audio ou vidéo (*.mov;*.webm;*.m4a;*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg)|*.mov;*.webm;*.m4a;*.flac;*.mp3;*.ape;*.mpc;*.ogg;*.wav;*.mp4;*.mkv;*.vob;*.aac;*.ac3;*.wav;*.wma;*.avi;*.ogv;*.tta;*.mpg;*.mpeg|Tous les types de fichiers (*.*)|*.*",
             InitialDirectory = SourceFiles.Any() ? Path.GetDirectoryName(SourceFiles.Last().Info.FullName) : Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)
         };
-        if (ofd.ShowDialog() == DialogResult.OK)
+        if (ofd.ShowDialog() == true)
         {
             AddPickedFiles(ofd);
         }
