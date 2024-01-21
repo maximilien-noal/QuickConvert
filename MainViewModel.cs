@@ -109,7 +109,7 @@
 
         private async Task ConvertMethodAsync()
         {
-            ReportProgress(Tuple.Create(0d, ""));
+            Report(Tuple.Create(0d, ""));
             if (SourceFiles.All(x => File.Exists(x.Info.FullName)) == false)
             {
                 MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont inaccessibles.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -181,7 +181,7 @@
         private void UpdateProgress(int i, FileInfoViewModel sourcefile)
         {
             var percentage = (double)i / SourceFiles.Count * 100;
-            ReportProgress(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
+            Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
             TextProgress = $"Conversion en cours... {percentage:0.00}%";
         }
 
@@ -441,7 +441,7 @@
 
         public double Percentage { get => _percentage; set { Set(nameof(Percentage), ref _percentage, value); } }
 
-        public void ReportProgress(Tuple<double, string> value)
+        public void Report(Tuple<double, string> value)
         {
             if (value is null)
             {
