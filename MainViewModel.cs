@@ -122,7 +122,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     public string TextProgress { get => _textProgress; set { Set(nameof(TextProgress), ref _textProgress, value); } }
 
 
-    private readonly string[] _extensions = new string[] { "*.mov", "*.webm","*.m4a", ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
+    private readonly string[] _extensions = ["*.mov", "*.webm","*.m4a", ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg"];
 
     private async Task ConvertMethodAsync()
     {

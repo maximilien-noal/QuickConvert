@@ -166,7 +166,7 @@ public partial class App : Application
         /// </param>
         public static void RemoveAdonisResources(ResourceDictionary rootResourceDictionary)
         {
-            Uri[] adonisResources = { ClassicTheme };
+            Uri[] adonisResources = [ClassicTheme];
             var currentTheme = FindFirstContainedResourceDictionaryByUri(rootResourceDictionary, adonisResources);
 
             if (currentTheme != null)
