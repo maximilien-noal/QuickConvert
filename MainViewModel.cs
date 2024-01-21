@@ -32,7 +32,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     public FileInfoViewModel? SelectedSourceFile { get => _selectedSourceFile; set { Set(nameof(SelectedSourceFile), ref _selectedSourceFile, value); } }
 
-    private ObservableCollection<LogEntry> _logs = new();
+    private ObservableCollection<LogEntry> _logs = [];
 
     public ObservableCollection<LogEntry> Logs
     {
@@ -79,11 +79,11 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     public string LastProcessedFile { get => _lastProcessedFile; set { Set(nameof(LastProcessedFile), ref _lastProcessedFile, value); } }
 
-    private ObservableCollection<FileInfoViewModel> _sourceFiles = new();
+    private ObservableCollection<FileInfoViewModel> _sourceFiles = [];
 
     public ObservableCollection<FileInfoViewModel> SourceFiles { get => _sourceFiles; internal set { Set(nameof(SourceFiles), ref _sourceFiles, value); } }
 
-    private ObservableCollection<FileInfoViewModel> _destFiles = new();
+    private ObservableCollection<FileInfoViewModel> _destFiles = [];
 
     public ObservableCollection<FileInfoViewModel> DestFiles { get => _destFiles; internal set { Set(nameof(DestFiles), ref _destFiles, value); } }
 
@@ -212,11 +212,11 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
         }
     }
 
-    private IEnumerable<string> EnumerateFilesRecursively(string folderPath)
+    private static List<string> EnumerateFilesRecursively(string folderPath)
     {
-        if (Path.GetFileName(folderPath)?.ToUpperInvariant() == ConversionSubFolderName.ToUpperInvariant())
+        if ((Path.GetFileName(folderPath)).Equals(ConversionSubFolderName, StringComparison.InvariantCultureIgnoreCase))
         {
-            return new List<string>();
+            return [];
         }
         var files = new List<string>(Directory.EnumerateFiles(folderPath));
         foreach (var dir in Directory.EnumerateDirectories(folderPath))
@@ -404,8 +404,8 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
     {
         var extension = ".mp3";
         string trimedName = GetTrimedName(fileInfoVm);
-        int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant());
-        while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName).ToUpperInvariant() == Path.GetFileNameWithoutExtension(trimedName).ToUpperInvariant()))
+        int offset = DestFiles.Count(x => Path.GetFileNameWithoutExtension(x.ShortFileName).Equals(Path.GetFileNameWithoutExtension(trimedName), StringComparison.InvariantCultureIgnoreCase));
+        while (DestFiles.Any(x => Path.GetFileNameWithoutExtension(x.ShortFileName).Equals(Path.GetFileNameWithoutExtension(trimedName), StringComparison.InvariantCultureIgnoreCase)))
         {
             trimedName = GetTrimedName(fileInfoVm, offset++);
         }

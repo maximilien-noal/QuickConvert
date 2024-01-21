@@ -1,14 +1,13 @@
 ﻿namespace QuickConvert;
 
 
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
-
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 
 public class FileInfoViewModel : ViewModelBase
 {
