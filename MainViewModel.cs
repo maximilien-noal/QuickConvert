@@ -102,7 +102,7 @@
 
         public RelayCommand DeleteAllSourceFiles { get; internal set; }
 
-        private readonly string[] _extensions = new string[] { ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
+        private readonly string[] _extensions = new string[] { "*.mov", "*.webm","*.m4a", ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
 
         private async Task ConvertMethodAsync()
         {
@@ -110,7 +110,7 @@
             Report(Tuple.Create(0d, ""));
             if (SourceFiles.All(x => File.Exists(x.Info.FullName)) == false)
             {
-                MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont vides.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont inaccessibles.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
                 IsBusy = false;
                 return;
             }
