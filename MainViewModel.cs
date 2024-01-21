@@ -250,34 +250,9 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     public MainViewModel()
     {
-        CancelEntireConversion = new RelayCommand(CancelConversion);
-        if (SimpleIoc.Default.IsRegistered<StartupEventArgs>())
-        {
-            foreach (var fileOrFolder in SimpleIoc.Default.GetInstance<StartupEventArgs>().Args)
-            {
-                if (Directory.Exists(fileOrFolder))
-                {
-                    foreach (var entry in EnumerateFilesRecursively(fileOrFolder))
-                    {
-                        AddFileToSourceAndDestIfExtensionIsValid(entry);
-                    }
-                }
-                else if (File.Exists(fileOrFolder))
-                {
-                    AddFileToSourceAndDestIfExtensionIsValid(fileOrFolder);
-                }
-            }
-        }
-        if (SourceFiles.Any() && SourceFiles.All(x => Path.GetDirectoryName(x.Info.FullName) == Path.GetDirectoryName(SourceFiles.First().Info.FullName)))
-        {
-            var destFolder = Path.GetDirectoryName(SourceFiles.First().Info.FullName);
-            if (string.IsNullOrWhiteSpace(destFolder) == false && Directory.Exists(destFolder))
-            {
-                DestFolder = destFolder;
-            }
-        }
         string ffmpegFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "./", "ffmpeg");
         FFMpegCore.GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = ffmpegFolder, TemporaryFilesFolder = Path.GetTempPath() });
+        CancelEntireConversion = new RelayCommand(CancelConversion);
         PickDestFolder = new RelayCommand(PickDestFolderMethod);
         PickSourceFiles = new RelayCommand(PickSourceFilesMethod);
         PickSourceFolder = new RelayCommand(PickSourceFolderMethod);
