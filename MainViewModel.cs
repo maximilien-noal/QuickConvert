@@ -109,7 +109,7 @@
 
         private async Task ConvertMethodAsync()
         {
-            Report(Tuple.Create(0d, ""));
+            ReportProgress(Tuple.Create(0d, ""));
             if (SourceFiles.All(x => File.Exists(x.Info.FullName)) == false)
             {
                 MessageBox.Show("Aucun fichier à convertir. Ils n'existent plus ou sont inaccessibles.", "Pas de fichier en entrée", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -181,7 +181,7 @@
         private void UpdateProgress(int i, FileInfoViewModel sourcefile)
         {
             var percentage = (double)i / SourceFiles.Count * 100;
-            Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
+            ReportProgress(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
             TextProgress = $"Conversion en cours... {percentage:0.00}%";
         }
 
@@ -366,20 +366,25 @@
             };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                if (ofd.FileNames.Length > 0)
+                AddPickedFiles(ofd);
+            }
+        }
+
+        private void AddPickedFiles(OpenFileDialog ofd)
+        {
+            if (ofd.FileNames.Length > 0)
+            {
+                foreach (var file in ofd.FileNames)
                 {
-                    foreach (var file in ofd.FileNames)
+                    if (string.IsNullOrWhiteSpace(file) == false && File.Exists(file))
                     {
-                        if (string.IsNullOrWhiteSpace(file) == false && File.Exists(file))
-                        {
-                            AddFileToSourceAndDest(file);
-                        }
+                        AddFileToSourceAndDest(file);
                     }
                 }
-                else if (string.IsNullOrWhiteSpace(ofd.FileName) == false && File.Exists(ofd.FileName))
-                {
-                    AddFileToSourceAndDest(ofd.FileName);
-                }
+            }
+            else if (string.IsNullOrWhiteSpace(ofd.FileName) == false && File.Exists(ofd.FileName))
+            {
+                AddFileToSourceAndDest(ofd.FileName);
             }
         }
 
@@ -436,7 +441,7 @@
 
         public double Percentage { get => _percentage; set { Set(nameof(Percentage), ref _percentage, value); } }
 
-        public void Report(Tuple<double, string> value)
+        public void ReportProgress(Tuple<double, string> value)
         {
             if (value is null)
             {
@@ -452,6 +457,25 @@
             {
                 TaskbarProgress.SetValue(new WindowInteropHelper(Application.Current.MainWindow).Handle, Percentage, 100);
             }
+        }
+
+        internal void AddStartupDestFileOrFolder(string[] processArguments)
+        {
+            foreach (var fileOrFolder in processArguments)
+            {
+                if (Directory.Exists(fileOrFolder))
+                {
+                    foreach (var file in EnumerateFilesRecursively(fileOrFolder))
+                    {
+                        AddFileToSourceAndDestIfExtensionIsValid(file);
+                    }
+                }
+                else if (File.Exists(fileOrFolder))
+                {
+                    AddFileToSourceAndDestIfExtensionIsValid(fileOrFolder);
+                }
+            }
+            
         }
     }
 }

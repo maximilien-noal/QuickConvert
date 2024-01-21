@@ -1,5 +1,6 @@
 ﻿namespace QuickConvert
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -35,6 +36,10 @@
             if (DataContext is MainViewModel vm)
             {
                 await vm.LoadAppSettingsAsync().ConfigureAwait(true);
+                if(Environment.GetCommandLineArgs().Length > 0)
+                {
+                    vm.AddStartupDestFileOrFolder(Environment.GetCommandLineArgs());
+                }
                 await LaunchConversionOnStartupAsync(vm).ConfigureAwait(true);
             }
         }
