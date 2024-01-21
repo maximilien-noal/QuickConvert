@@ -50,7 +50,7 @@ public partial class App : Application
         base.OnStartup(e);
         try
         {
-            if (AreWuindowsThemesSupported())
+            if (AreWindowsThemesSupported())
             {
                 WatchTheme();
                 ChangeThemeIfWindowsChangedIt();
@@ -65,7 +65,7 @@ public partial class App : Application
 #pragma warning restore ERP022 // Unobserved exception in generic exception handler
     }
 
-    private static bool AreWuindowsThemesSupported()
+    private static bool AreWindowsThemesSupported()
     {
         try
         {
