@@ -1,15 +1,5 @@
 ﻿namespace QuickConvert;
 
-using AsyncAwaitBestPractices.MVVM;
-
-using FFMpegCore;
-
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
-
-using Microsoft.Win32;
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,6 +11,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+
+using AsyncAwaitBestPractices.MVVM;
+
+using FFMpegCore;
+
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+
+using Microsoft.Win32;
 
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
