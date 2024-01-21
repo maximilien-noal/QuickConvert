@@ -417,12 +417,12 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
         if (offset == 0)
         {
             var trimedName = GetNameWithoutSpaces(fileInfoVm);
-            return $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}";
+            return $"{trimedName[..(ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)]}";
         }
         else
         {
             var trimedName = GetNameWithoutSpaces(fileInfoVm);
-            return $"{trimedName.Substring(0, ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)}_{offset}";
+            return $"{trimedName[..(ShortFileNameCharLimit > trimedName.Length ? trimedName.Length : ShortFileNameCharLimit)]}_{offset}";
         }
     }
 
