@@ -102,11 +102,13 @@
 
         public RelayCommand DeleteAllSourceFiles { get; internal set; }
 
+        public string TextProgress { get; internal set; } = "Prêt";
+
+
         private readonly string[] _extensions = new string[] { "*.mov", "*.webm","*.m4a", ".flac", ".mp3", ".ape", ".mpc", ".ogg", ".wav", ".mp4", ".mkv", ".vob", ".aac", ".ac3", ".wav", ".wma", ".avi", ".ogv", ".tta", ".mpg", ".mpeg" };
 
         private async Task ConvertMethodAsync()
         {
-            IsBusy = true;
             Report(Tuple.Create(0d, ""));
             if (SourceFiles.All(x => File.Exists(x.Info.FullName)) == false)
             {
@@ -114,6 +116,8 @@
                 IsBusy = false;
                 return;
             }
+            IsBusy = true;
+            TextProgress = "Conversion en cours...";
             try
             {
                 for (int i = 0; i < SourceFiles.Where(x => File.Exists(x.Info.FullName)).Count(); i++)
@@ -170,6 +174,7 @@
             {
                 IsBusy = false;
                 TaskbarProgress.SetState(new WindowInteropHelper(Application.Current.MainWindow).Handle, TaskbarProgress.TaskbarStates.Indeterminate);
+                TextProgress = "Conversion terminée";
             }
         }
 
@@ -177,6 +182,7 @@
         {
             var percentage = (double)i / SourceFiles.Count * 100;
             Report(Tuple.Create(percentage, Path.GetFileName(sourcefile.Info.FullName)));
+            TextProgress = $"Conversion en cours... {percentage:0.00}%";
         }
 
         private void UpdateLogs(Task<bool> completedTask, FileInfoViewModel sourcefile, string destfile)
