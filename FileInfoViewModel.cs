@@ -35,20 +35,20 @@ public class FileInfoViewModel : ViewModelBase
         return Path.Combine(Path.GetDirectoryName(Info.FullName) ?? "./", ConversionSubFolderName);
     }
 
-    public string DestFile => GetDestFile(SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.IndexOf(this));
+    public string DestFile => GetDestFile(_mainWindowViewModel.DestFiles.IndexOf(this));
 
     public string GetDestFile(int i)
     {
         string destFolder = GetDestFolder();
-        var destfileName = SimpleIoc.Default.GetInstance<MainViewModel>().DestFiles.ElementAt(i).ShortFileName;
+        var destfileName = _mainWindowViewModel.DestFiles.ElementAt(i).ShortFileName;
         var destFile = Path.Combine(destFolder, destfileName);
         return destFile;
     }
 
     private string GetDestFolder()
     {
-        string destFolder = SimpleIoc.Default.GetInstance<MainViewModel>().DestFolder;
-        if (SimpleIoc.Default.GetInstance<MainViewModel>().UseSourceFolderAsDest)
+        string destFolder = _mainWindowViewModel.DestFolder;
+        if (_mainWindowViewModel.UseSourceFolderAsDest)
         {
             destFolder = GetSubFolder();
         }
@@ -71,8 +71,11 @@ public class FileInfoViewModel : ViewModelBase
         return destFile;
     }
 
-    public FileInfoViewModel(string fullFilePath)
+    private readonly MainViewModel _mainWindowViewModel;
+
+    public FileInfoViewModel(MainViewModel mainViewModel, string fullFilePath)
     {
+        _mainWindowViewModel = mainViewModel;
         if (string.IsNullOrWhiteSpace(fullFilePath) || File.Exists(fullFilePath) == false)
         {
             throw new FileNotFoundException(fullFilePath);
@@ -81,7 +84,7 @@ public class FileInfoViewModel : ViewModelBase
         Name = Path.GetFileName(fullFilePath);
         FullPath = fullFilePath;
 
-        RemoveSourceFile = new RelayCommand(() => SimpleIoc.Default.GetInstance<MainViewModel>().RemoveSourceFile(this));
+        RemoveSourceFile = new RelayCommand(() => _mainWindowViewModel.RemoveSourceFile(this));
         PlaySourceFile = new RelayCommand(() => Process.Start(new ProcessStartInfo(Info.FullName) { UseShellExecute = true }));
     }
 }

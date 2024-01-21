@@ -390,7 +390,7 @@ public class MainViewModel : ViewModelBase, IProgress<Tuple<double, string>>
 
     private void AddFileToSourceAndDest(string file)
     {
-        var fileInfoVm = new FileInfoViewModel(file);
+        var fileInfoVm = new FileInfoViewModel(this, file);
         fileInfoVm.ShortFileName = Path.GetFileName(fileInfoVm.Info.FullName);
         if (fileInfoVm.ShortFileName.Length > ShortFileNameCharLimit)
         {
