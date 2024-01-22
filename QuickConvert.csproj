@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Quick.ico</ApplicationIcon>
     <PublishReadyToRun>True</PublishReadyToRun>
-    <Version>0.5</Version>
+    <Version>0.6</Version>
     <AssemblyName>QuickConvert</AssemblyName>
     <Nullable>enable</Nullable>
     <PublishReadyToRun>True</PublishReadyToRun>
@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <None Remove="Quick.png" />
+    <None Remove="splash.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,5 +49,9 @@
 
   <ItemGroup>
     <Resource Include="Assets\appicon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="splash.png" />
   </ItemGroup>
 </Project>
